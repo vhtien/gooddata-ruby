@@ -88,8 +88,8 @@ module GoodData
       ]
 
       RETRIES_ON_TOO_MANY_REQUESTS_ERROR = 12
-      RETRY_TIME_INITIAL_VALUE = 1
-      RETRY_TIME_COEFFICIENT = 1.5
+      RETRY_TIME_INITIAL_VALUE = 1 * 2
+      RETRY_TIME_COEFFICIENT = 1.5 * 2
       RETRYABLE_ERRORS << Net::ReadTimeout if Net.const_defined?(:ReadTimeout)
 
       class << self
@@ -132,16 +132,23 @@ module GoodData
           rescue RestClient::Unauthorized, RestClient::Forbidden => e # , RestClient::Unauthorized => e
             raise e unless options[:refresh_token]
             raise e if options[:dont_reauth]
+            sleep retry_time
+            retry_time *= RETRY_TIME_COEFFICIENT
+            puts "XEN KUTE   going to retry in RestClient::Unauthorized, RestClient::Forbidden"
             options[:refresh_token].call # (dont_reauth: true)
             retry if (retries -= 1) > 0
           rescue RestClient::TooManyRequests, RestClient::ServiceUnavailable
             GoodData.logger.warn "Too many requests, retrying in #{retry_time} seconds"
             sleep retry_time
             retry_time *= RETRY_TIME_COEFFICIENT
+            puts "XEN KUTE   going to retry in RestClient::TooManyRequests, RestClient::ServiceUnavailable"
             # 10 requests with 1.5 coefficent should take ~ 3 mins to finish
             retry if (too_many_requests_tries -= 1) > 1
           rescue *retry_exception => e
             GoodData.logger.warn e.inspect
+            sleep retry_time
+            retry_time *= RETRY_TIME_COEFFICIENT
+            puts "XEN KUTE   going to retry in *retry_exception"
             retry if (retries -= 1) > 1
           end
           yield
