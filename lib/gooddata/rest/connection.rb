@@ -91,6 +91,7 @@ module GoodData
       RETRY_TIME_INITIAL_VALUE = 1
       RETRY_TIME_COEFFICIENT = 1.5
       RETRYABLE_ERRORS << Net::ReadTimeout if Net.const_defined?(:ReadTimeout)
+      RETRYABLE_ERRORS << RestClient::BadRequest # xen debug
 
       class << self
         def construct_login_payload(username, password)
@@ -141,6 +142,9 @@ module GoodData
             # 10 requests with 1.5 coefficent should take ~ 3 mins to finish
             retry if (too_many_requests_tries -= 1) > 1
           rescue *retry_exception => e
+            puts "XENKUTE"
+            puts e.inspect
+            puts "Retry ", retries
             GoodData.logger.warn e.inspect
             retry if (retries -= 1) > 1
           end
