@@ -157,10 +157,12 @@ module GoodData
         project
       end
 
-      def find(_opts = {}, client = GoodData::Rest::Client.client)
-        user = client.user
-        user.projects['projects'].map do |project|
-          client.create(GoodData::Project, project)
+      def find(opts = { client: GoodData.connection })
+        c = client(opts)
+        fail ArgumentError, 'No :client specified' if c.nil?
+
+        c.user.projects['projects'].map do |project|
+          c.create(GoodData::Project, project)
         end
       end
 
@@ -190,23 +192,20 @@ module GoodData
       # @param client [GoodData::Rest::Client] GoodData client to be used for connection
       # @param from_project [GoodData::Project | GoodData::Segment | GoodData:Client | String] Object to be cloned from. Can be either segment in which case we take the master, client in which case we take its project, string in which case we treat is as an project object or directly project
       def transfer_etl(client, from_project, to_project)
-        from_project = case from_project
-                       when GoodData::Client
-                         from_project.project
-                       when GoodData::Segment
-                         from_project.master_project
-                       else
-                         client.projects(from_project)
-                       end
+        private def get_project(client, project)
+          case from_project
+            when GoodData::Client
+              from_project.project
+            when GoodData::Segment
+              from_project.master_project
+            else
+              client.projects(from_project)
+            end
+        end
 
-        to_project = case to_project
-                     when GoodData::Client
-                       to_project.project
-                     when GoodData::Segment
-                       to_project.master_project
-                     else
-                       client.projects(to_project)
-                     end
+        from_project = get_project(client, from_project)
+        to_project = get_project(client, to_project)
+
         transfer_processes(from_project, to_project)
         transfer_schedules(from_project, to_project)
       end
