@@ -27,7 +27,7 @@ describe 'GoodData - project' do
     end
 
     it 'Assigns project using project URL' do
-      GoodData.use ProjectHelper::PROJECT_URL << ProjectHelper::PROJECT_ID, client: @client
+      GoodData.use ProjectHelper::PROJECT_URL, client: @client
     end
 
     it 'Assigns project directly' do
