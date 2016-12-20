@@ -42,6 +42,8 @@ module GoodData
   module LCM2
     MODES = {
       release: [
+        EnsureSegments,
+        CreateSegmentMasters,
         SynchronizeLdm,
         SynchronizeLabelTypes,
         SynchronizeMeta,
