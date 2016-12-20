@@ -4,12 +4,13 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+require_relative '../base_type'
+
 module GoodData
   module LCM2
-    class Base
-      class << self
-        def check_params(_specification, _params)
-        end
+    module Type
+      class ObjectType < BaseType
+        INTERNAL_TYPE = Hash
       end
     end
   end

@@ -4,23 +4,13 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-require_relative 'base_action'
+require_relative '../types/types'
 
 module GoodData
   module LCM2
-    class PurgeClients < BaseAction
-      PARAMS = {
-      }
-
+    class BaseAction
       class << self
-        def call(params)
-          # Check if all required parameters were passed
-          Base.check_params(PARAMS, params)
-
-          results = []
-
-          # Return results
-          results
+        def check_params(_specification, _params)
         end
       end
     end
