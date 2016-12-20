@@ -32,6 +32,7 @@
 #   ]
 # }
 
+require 'hashie'
 require 'terminal-table'
 
 require_relative 'actions/actions'
@@ -107,6 +108,9 @@ module GoodData
 
       def perform(mode, params = {})
         puts "Running GoodData::LCM2#perform('#{mode}')"
+
+        # Symbolize all keys
+        Hashie.symbolize_keys!(params)
 
         # Get actions for mode specified
         actions = self.get_mode_actions(mode)
