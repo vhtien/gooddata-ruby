@@ -134,6 +134,7 @@ module GoodData
           res
         end
 
+        # Print execution summary/results
         self.print_actions_result(actions, results)
       end
     end

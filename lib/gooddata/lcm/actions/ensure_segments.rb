@@ -9,7 +9,7 @@ require_relative 'base_action'
 module GoodData
   module LCM2
     class EnsureSegments < BaseAction
-      define_params(self) do
+      PARAMS = define_params(self) do
         description 'Definition of segments'
         param :segments, array_of(Type::SegmentType), required: true
       end

@@ -12,7 +12,7 @@ module GoodData
       class SegmentType < BaseType
         CATEGORY = :complex
 
-        define_params(self) do
+        PARAMS = define_params(self) do
           description 'Username used for connecting to GD'
           param :username, Type::StringType, required: true
 

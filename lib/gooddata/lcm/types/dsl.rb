@@ -11,7 +11,8 @@ module GoodData
     module Type
       module Dsl
         DEFAULT_OPTS = {
-          required: false
+          required: false,
+          default: nil
         }
 
         class Context
@@ -20,14 +21,27 @@ module GoodData
           end
         end
 
+        def array_of(type)
+        end
+
         def define_params(klass)
           puts "Defining params for #{klass.name}"
           yield if block_given?
         end
 
+        def description(desc)
+          puts "Param description: '#{desc}'"
+        end
+
         def param(name, type, opts = DEFAULT_OPTS)
           opts = DEFAULT_OPTS.deep_merge(opts)
-          puts "Defining field #{name} - #{type}, opts: #{opts}"
+          puts "Defining field '#{name}', type: '#{type}', opts: #{opts}"
+        end
+
+        def array_of(type)
+        end
+
+        def enum_of(types)
         end
       end
     end

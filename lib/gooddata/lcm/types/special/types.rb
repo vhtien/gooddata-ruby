@@ -4,9 +4,9 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-require_relative 'base_type'
-require_relative 'dsl'
+require 'pathname'
 
-require_relative 'scalar/types'
-require_relative 'complex/types'
-require_relative 'special/types'
+base = Pathname(__FILE__).dirname.expand_path
+Dir.glob(base + '*.rb').each do |file|
+  require file
+end
