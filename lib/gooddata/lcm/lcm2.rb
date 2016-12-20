@@ -52,10 +52,10 @@ module GoodData
       ],
 
       provision: [
-        EnsureTitles,
         EnsureUsers,
         PurgeClients,
         ProvisionClients,
+        EnsureTitles,
         SynchronizeLabelTypes,
         SynchronizeProcesses,
         SynchronizeSchedules,

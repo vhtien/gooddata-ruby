@@ -25,17 +25,17 @@ module GoodData
         end
 
         def define_params(klass)
-          puts "Defining params for #{klass.name}"
+          puts "PARAMS OF: #{klass.name}"
           yield if block_given?
         end
 
         def description(desc)
-          puts "Param description: '#{desc}'"
+          puts "PARAM DESCRIPTION: '#{desc}'"
         end
 
         def param(name, type, opts = DEFAULT_OPTS)
           opts = DEFAULT_OPTS.deep_merge(opts)
-          puts "Defining field '#{name}', type: '#{type}', opts: #{opts}"
+          puts "PARAM: #{name}, type: '#{type}', opts: #{opts}"
         end
 
         def array_of(type)
