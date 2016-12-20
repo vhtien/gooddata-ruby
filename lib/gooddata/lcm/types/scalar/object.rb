@@ -9,8 +9,9 @@ require_relative '../base_type'
 module GoodData
   module LCM2
     module Type
-      class StringType < BaseType
-        INTERNAL_TYPE = String
+      class ObjectType < BaseType
+        CATEGORY = :scalar
+        INTERNAL_TYPE = Hash
       end
     end
   end

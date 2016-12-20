@@ -9,8 +9,16 @@ require_relative '../base_type'
 module GoodData
   module LCM2
     module Type
-      class AdsClientType < BaseType
+      class SegmentType < BaseType
         CATEGORY = :complex
+
+        define_params(self) do
+          description 'Username used for connecting to GD'
+          param :username, Type::StringType, required: true
+
+          description 'Password used for connecting to GD'
+          param :password, Type::StringType, required: true
+        end
       end
     end
   end

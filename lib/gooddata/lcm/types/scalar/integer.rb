@@ -9,8 +9,9 @@ require_relative '../base_type'
 module GoodData
   module LCM2
     module Type
-      class ArrayType < BaseType
-        INTERNAL_TYPE = Array
+      class IntegerType < BaseType
+        CATEGORY = :scalar
+        INTERNAL_TYPE = Integer
       end
     end
   end
