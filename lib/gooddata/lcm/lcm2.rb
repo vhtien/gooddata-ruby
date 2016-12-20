@@ -67,9 +67,11 @@ module GoodData
       ]
     }
 
+    MODE_NAMES = MODES.keys
+
     class << self
       def get_mode_actions(mode)
-        MODES[mode.to_sym] || fail("Inavlid mode specified '#{mode}', supported modes are: '#{MODES.keys.join(', ')}'")
+        MODES[mode.to_sym] || fail("Inavlid mode specified '#{mode}', supported modes are: '#{MODE_NAMES.join(', ')}'")
       end
 
       def print_action_names(actions)
@@ -100,6 +102,7 @@ module GoodData
           self.print_action_result(action, results[index])
           puts
         end
+        nil
       end
 
       def perform(mode, params = {})

@@ -4,23 +4,11 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-require_relative 'action_base'
-
 module GoodData
   module LCM2
-    class SynchronizeLdm < Base
-      PARAMS = {
-      }
-
+    class Base
       class << self
-        def call(params)
-          # Check if all required parameters were passed
-          Base.check_params(PARAMS, params)
-
-          results = []
-
-          # Return results
-          results
+        def check_params(_specification, _params)
         end
       end
     end
