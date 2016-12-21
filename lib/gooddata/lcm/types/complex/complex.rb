@@ -17,8 +17,12 @@ module GoodData
           class_params = self.class.const_get(:PARAMS)
           params = class_params.keys.map do |key|
             param = class_params[key]
-            [param[:name], param[:type]]
+            if param[:opts][:required]
+              [param[:name], param[:type]]
+            end
           end
+
+          params.compact!
 
           params = params.map do |param|
             param.join(': ')

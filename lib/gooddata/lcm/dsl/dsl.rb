@@ -20,6 +20,9 @@ module GoodData
           default: nil
         }
 
+        TYPES = {
+        }
+
         def define_params(klass, &block)
           dsl = GoodData::LCM2::Dsl::ParamsDsl.new
           dsl.instance_eval(&block)
@@ -39,6 +42,8 @@ module GoodData
           puts "TYPE: #{klass.name}"
           puts JSON.pretty_generate(dsl.params)
           puts
+
+          TYPES[klass.name] = dsl.params
 
           # Return params
           dsl.params

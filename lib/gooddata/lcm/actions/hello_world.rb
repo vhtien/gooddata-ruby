@@ -22,7 +22,7 @@ module GoodData
           BaseAction.check_params(PARAMS, params)
 
           msg = {
-            message: params[:message]
+            message: params.message
           }
           results = [msg]
 

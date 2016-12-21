@@ -20,6 +20,10 @@ module GoodData
     end
 
     MODES = {
+      info: [
+        PrintTypes
+      ],
+
       test: [
         HelloWorld
       ],
@@ -90,7 +94,12 @@ module GoodData
           rows << [index, action, action.const_defined?(:DESCRIPTION) && action.const_get(:DESCRIPTION)]
         end
 
-        table = Terminal::Table.new :title => title, :headings => headings, :rows => rows
+        table = Terminal::Table.new :title => title, :headings => headings do |t|
+          rows.each_with_index do |row, index|
+            t << row
+            t.add_separator if index < rows.length - 1
+          end
+        end
         puts table
       end
 
@@ -106,7 +115,13 @@ module GoodData
           row
         end
 
-        table = Terminal::Table.new :title => title, :headings => headings, :rows => rows
+        table = Terminal::Table.new :title => title, :headings => headings do |t|
+          rows.each_with_index do |row, index|
+            t << row
+            t.add_separator if index < rows.length - 1
+          end
+        end
+
         puts table
       end
 
@@ -121,7 +136,7 @@ module GoodData
       def perform(mode, params = {})
         puts "Running GoodData::LCM2#perform('#{mode}')"
 
-        self.convert_params(params)
+        params = self.convert_params(params)
 
         # Get actions for mode specified
         actions = self.get_mode_actions(mode)
@@ -133,6 +148,8 @@ module GoodData
         results = actions.map do |action|
           # puts "Performing #{action.name}"
 
+          puts
+
           # Invoke action
           res = action.send(:call, params)
 
@@ -143,12 +160,14 @@ module GoodData
           res
         end
 
-        puts
-        puts 'SUMMARY'
-        puts
+        if actions.length > 1
+          puts
+          puts 'SUMMARY'
+          puts
 
-        # Print execution summary/results
-        self.print_actions_result(actions, results)
+          # Print execution summary/results
+          self.print_actions_result(actions, results)
+        end
       end
     end
   end
