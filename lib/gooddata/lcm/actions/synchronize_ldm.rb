@@ -15,7 +15,7 @@ module GoodData
       class << self
         def call(params)
           # Check if all required parameters were passed
-          Base.check_params(PARAMS, params)
+          BaseAction.check_params(PARAMS, params)
 
           results = []
 

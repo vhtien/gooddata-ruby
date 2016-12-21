@@ -12,6 +12,12 @@ module GoodData
       class BooleanType < BaseType
         CATEGORY = :scalar
         INTERNAL_TYPE = Integer
+
+        class << self
+          def check(value)
+            true
+          end
+        end
       end
     end
   end

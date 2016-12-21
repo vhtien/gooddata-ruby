@@ -12,6 +12,12 @@ module GoodData
       class ObjectType < BaseType
         CATEGORY = :scalar
         INTERNAL_TYPE = Hash
+
+        class << self
+          def check(value)
+            true
+          end
+        end
       end
     end
   end

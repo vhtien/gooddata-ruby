@@ -12,6 +12,12 @@ module GoodData
       class StringType < BaseType
         CATEGORY = :scalar
         INTERNAL_TYPE = String
+
+        class << self
+          def check(value)
+            value.kind_of?(String)
+          end
+        end
       end
     end
   end

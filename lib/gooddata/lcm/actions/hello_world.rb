@@ -8,16 +8,21 @@ require_relative 'base_action'
 
 module GoodData
   module LCM2
-    class SynchronizeLabelTypes < BaseAction
-      PARAMS = {
-      }
+    class HelloWorld < BaseAction
+      PARAMS = define_params(self) do
+        description 'Message to be printed'
+        param :message, Type::StringType, required: true
+      end
 
       class << self
         def call(params)
           # Check if all required parameters were passed
           BaseAction.check_params(PARAMS, params)
 
-          results = []
+          msg = {
+            message: params[:message]
+          }
+          results = [msg]
 
           # Return results
           results

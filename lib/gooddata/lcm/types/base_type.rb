@@ -5,14 +5,14 @@
 
 # LICENSE file in the root directory of this source tree.
 
-require_relative 'dsl'
+require_relative '../dsl/dsl'
 
 module GoodData
   module LCM2
     module Type
       class BaseType
         class << self
-          include Dsl
+          include Dsl::Dsl
         end
       end
     end

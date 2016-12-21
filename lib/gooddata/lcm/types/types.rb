@@ -5,7 +5,6 @@
 # LICENSE file in the root directory of this source tree.
 
 require_relative 'base_type'
-require_relative 'dsl'
 
 require_relative 'scalar/types'
 require_relative 'complex/types'

@@ -4,43 +4,20 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-#########################################################
-# New Architecture of Transfer Everything Functionality #
-#########################################################
-#
-# modes = {
-#   release: [
-#     self.synchronize_ldm,
-#     self.synchronize_label_types,
-#     self.synchronize_meta, # Tag specified? If yes, transfer only tagged stuff. If not transfer all meta.
-#     self.synchronize_etl, # Processes, Schedules, Additional Params
-#   ],
-#   provisioning: [
-#     # self.ensure_titles # Handled by Provisioning Brick?
-#     self.ensure_users,
-#     self.purge_clients,
-#     self.provision_clients, # LCM API
-#     self.synchronize_label_types,
-#     self.synchronize_etl # Processes, Schedules, Additional Params
-#   ],
-#   rollout: [ # Works on segments only, not using collect_clients
-#     self.ensure_users,
-#     self.synchronize_ldm,
-#     self.synchronize_label_types,
-#     self.synchronize_etl, # Processes, Schedules, Additional Params
-#     self.synchronize_clients
-#   ]
-# }
-
 require 'hashie'
 require 'terminal-table'
 
 require_relative 'actions/actions'
+require_relative 'dsl/dsl'
 require_relative 'helpers/helpers'
 
 module GoodData
   module LCM2
     MODES = {
+      test: [
+        HelloWorld
+      ],
+
       release: [
         EnsureSegments,
         CreateSegmentMasters,
@@ -130,9 +107,13 @@ module GoodData
           # Print action result
           self.print_action_result(action, res)
 
-          # Return result for finally summary
+          # Return result for final summary
           res
         end
+
+        puts
+        puts 'SUMMARY'
+        puts
 
         # Print execution summary/results
         self.print_actions_result(actions, results)
