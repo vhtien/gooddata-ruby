@@ -9,7 +9,7 @@ require_relative 'base_action'
 module GoodData
   module LCM2
     class EnsureTitles < BaseAction
-      DESCRIPTION = ''
+      DESCRIPTION = 'Ensure Project Titles - Based On Input Source Data'
 
       PARAMS = {
       }

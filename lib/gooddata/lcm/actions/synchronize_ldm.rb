@@ -9,7 +9,7 @@ require_relative 'base_action'
 module GoodData
   module LCM2
     class SynchronizeLdm < BaseAction
-      DESCRIPTION = ''
+      DESCRIPTION = 'Synchronize Logical Data Model'
 
       PARAMS = {
       }

@@ -9,7 +9,7 @@ require_relative 'base_action'
 module GoodData
   module LCM2
     class SynchronizeSchedules < BaseAction
-      DESCRIPTION = ''
+      DESCRIPTION = 'Synchronize ETL (CC/Ruby) Processes Schedules'
 
       PARAMS = {
       }

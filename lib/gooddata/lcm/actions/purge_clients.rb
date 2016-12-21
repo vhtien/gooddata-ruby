@@ -9,7 +9,7 @@ require_relative 'base_action'
 module GoodData
   module LCM2
     class PurgeClients < BaseAction
-      DESCRIPTION = ''
+      DESCRIPTION = 'Purge LCM Clients'
 
       PARAMS = {
       }

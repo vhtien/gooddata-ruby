@@ -9,7 +9,7 @@ require_relative 'base_action'
 module GoodData
   module LCM2
     class CreateSegmentMasters < BaseAction
-      DESCRIPTION = ''
+      DESCRIPTION = 'Create Master Projects for Segments'
 
       PARAMS = {
       }

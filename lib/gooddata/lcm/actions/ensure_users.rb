@@ -9,7 +9,7 @@ require_relative 'base_action'
 module GoodData
   module LCM2
     class EnsureUsers < BaseAction
-      DESCRIPTION = ''
+      DESCRIPTION = 'Ensure Project and/or Domain Users - Based On Input Source Data'
 
       PARAMS = {
       }
