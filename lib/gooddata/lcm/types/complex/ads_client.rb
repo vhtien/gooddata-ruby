@@ -23,7 +23,7 @@ module GoodData
         end
 
         def check(value)
-          true
+          BaseType.check_params(PARAMS, value)
         end
       end
     end

@@ -17,6 +17,11 @@ module GoodData
               end
             else
               type = specification[param_name][:type]
+
+              if type.class.const_get(:CATEGORY) == :complex && !value.kind_of?(Hash)
+                fail "Expected parameter '#{param_name}' to be Hash, got #{value.class.name}"
+              end
+
               if !type.check(value)
                 fail "Parameter '#{param_name}' has invalid type, expected: #{type}"
               end
