@@ -6,10 +6,12 @@
 
 require_relative '../base_type'
 
+require_relative 'complex'
+
 module GoodData
   module LCM2
     module Type
-      class SegmentType < BaseType
+      class SegmentType < ComplexType
         CATEGORY = :complex
 
         PARAMS = define_type(self) do

@@ -6,10 +6,12 @@
 
 require_relative '../base_type'
 
+require_relative 'complex'
+
 module GoodData
   module LCM2
     module Type
-      class AdsClientType < BaseType
+      class AdsClientType < ComplexType
         CATEGORY = :complex
 
         PARAMS = define_type(self) do
