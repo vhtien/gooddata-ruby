@@ -64,18 +64,25 @@ module GoodData
       end
 
       def get_mode_actions(mode)
-        MODES[mode.to_sym] || fail("Inavlid mode specified '#{mode}', supported modes are: '#{MODE_NAMES.join(', ')}'")
+        MODES[mode.to_sym] || fail("Invalid mode specified '#{mode}', supported modes are: '#{MODE_NAMES.join(', ')}'")
       end
 
       def print_action_names(actions)
-        puts 'Following actions will be performed'
-        actions.each do |action|
-          puts action.name
+        title = 'Actions to be performed'
+
+        headings = %w(# Name Description)
+
+        rows = []
+        actions.each_with_index do |action, index|
+          rows << [index, action, action.const_defined?(:DESCRIPTION) && action.const_get(:DESCRIPTION)]
         end
+
+        table = Terminal::Table.new :title => title, :headings => headings, :rows => rows
+        puts table
       end
 
       def print_action_result(action, messages)
-        title = action.name
+        title = "Result of #{action.name}"
         headings = (messages.first && messages.first.keys) || []
 
         rows = messages.map do |message|
@@ -111,7 +118,7 @@ module GoodData
 
         # Run actions
         results = actions.map do |action|
-          puts "Performing #{action.name}"
+          # puts "Performing #{action.name}"
 
           # Invoke action
           res = action.send(:call, params)

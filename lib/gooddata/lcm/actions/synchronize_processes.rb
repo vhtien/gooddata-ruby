@@ -9,6 +9,8 @@ require_relative 'base_action'
 module GoodData
   module LCM2
     class SynchronizeProcesses < BaseAction
+      DESCRIPTION = ''
+
       PARAMS = {
       }
 

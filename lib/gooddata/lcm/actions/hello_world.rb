@@ -9,6 +9,8 @@ require_relative 'base_action'
 module GoodData
   module LCM2
     class HelloWorld < BaseAction
+      DESCRIPTION = 'Print Hello World Message'
+
       PARAMS = define_params(self) do
         description 'Message to be printed'
         param :message, instance_of(Type::StringType), required: true
