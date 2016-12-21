@@ -16,7 +16,13 @@ module GoodData
           @type = type
         end
 
-        def check(value)
+        def check(values)
+          return false unless values.kind_of?(Array)
+
+          values.each do |value|
+            return false unless @type.check(value)
+          end
+
           true
         end
 

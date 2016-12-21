@@ -9,7 +9,7 @@ require_relative 'base_action'
 module GoodData
   module LCM2
     class EnsureSegments < BaseAction
-      DESCRIPTION = ''
+      DESCRIPTION = 'Ensure Segments Exist (LCM API)'
 
       PARAMS = define_params(self) do
         param :segments, array_of(instance_of(Type::SegmentType)), required: true

@@ -6,6 +6,7 @@
 # LICENSE file in the root directory of this source tree.
 
 require_relative '../dsl/dsl'
+require_relative '../helpers/helpers'
 
 module GoodData
   module LCM2
@@ -13,6 +14,10 @@ module GoodData
       class BaseType
         class << self
           include Dsl::Dsl
+
+          def check_params(specification, params)
+            Helpers.check_params(specification, params)
+          end
         end
 
         def to_s

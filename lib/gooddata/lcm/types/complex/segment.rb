@@ -13,15 +13,15 @@ module GoodData
         CATEGORY = :complex
 
         PARAMS = define_type(self) do
-          description 'Username used for connecting to GD'
-          param :username, instance_of(Type::StringType), required: true
+          description 'Segment ID'
+          param :segment_id, instance_of(Type::StringType), required: true
 
-          description 'Password used for connecting to GD'
-          param :password, instance_of(Type::StringType), required: true
+          description 'PID of Segment Master Project'
+          param :master_pid, instance_of(Type::StringType), required: true
         end
 
         def check(value)
-          true
+          BaseType.check_params(PARAMS, value)
         end
       end
     end
