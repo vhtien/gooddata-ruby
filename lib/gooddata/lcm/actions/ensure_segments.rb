@@ -12,7 +12,7 @@ module GoodData
       DESCRIPTION = 'Ensure Segments Exist (LCM API)'
 
       PARAMS = define_params(self) do
-        param :gd_client, array_of(instance_of(Type::GdClientType)), required: true
+        param :gd_client, instance_of(Type::GdClientType), required: true
         param :segments, array_of(instance_of(Type::SegmentType)), required: true
       end
 
