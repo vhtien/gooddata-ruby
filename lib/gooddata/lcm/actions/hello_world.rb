@@ -17,9 +17,15 @@ module GoodData
       end
 
       class << self
+        def say(msg)
+          puts "#{self.name}#say - #{msg}"
+        end
+
         def call(params)
           # Check if all required parameters were passed
           BaseAction.check_params(PARAMS, params)
+
+          say(params.message)
 
           msg = {
             message: params.message

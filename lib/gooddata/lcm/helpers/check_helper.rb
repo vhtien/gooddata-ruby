@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+require 'json'
+
 module GoodData
   module LCM2
     class Helpers
@@ -19,7 +21,8 @@ module GoodData
               type = specification[param_name][:type]
 
               if type.class.const_get(:CATEGORY) == :complex && !value.kind_of?(Hash)
-                fail "Expected parameter '#{param_name}' to be Hash, got #{value.class.name}"
+                puts JSON.pretty_generate(params)
+                fail "Expected parameter '#{param_name}' to be kind of '#{type}', got '#{value.class.name}'"
               end
 
               if !type.check(value)

@@ -24,7 +24,7 @@ module GoodData
         PrintTypes
       ],
 
-      test: [
+      hello: [
         HelloWorld
       ],
 
