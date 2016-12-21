@@ -14,6 +14,9 @@ require_relative 'helpers/helpers'
 module GoodData
   module LCM2
     class SmartHash < Hash
+      def method_missing(name, *args, &block)
+        self[name]
+      end
     end
 
     MODES = {
@@ -60,7 +63,17 @@ module GoodData
       end
 
       def convert_to_smart_hash(params)
-        params
+        res = SmartHash.new
+
+        params.each_pair do |k, v|
+          if v.kind_of?(Hash)
+            res[k] = self.convert_to_smart_hash(v)
+          else
+            res[k] = v
+          end
+        end
+
+        res
       end
 
       def get_mode_actions(mode)
