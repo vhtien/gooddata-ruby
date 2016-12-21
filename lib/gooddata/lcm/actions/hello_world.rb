@@ -11,7 +11,7 @@ module GoodData
     class HelloWorld < BaseAction
       PARAMS = define_params(self) do
         description 'Message to be printed'
-        param :message, Type::StringType, required: true
+        param :message, instance_of(Type::StringType), required: true
       end
 
       class << self

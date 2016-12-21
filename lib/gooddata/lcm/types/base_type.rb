@@ -14,6 +14,10 @@ module GoodData
         class << self
           include Dsl::Dsl
         end
+
+        def to_s
+          self.class.name
+        end
       end
     end
   end

@@ -23,7 +23,7 @@ module GoodData
             else
               type = specification[param_name][:type]
               if !type.check(value)
-                fail "Parameter '#{param_name}' has invalid type, expected: #{type}"
+                fail "Parameter '#{param_name}' has invalid type, expected: #{type.class.name}"
               end
             end
           end

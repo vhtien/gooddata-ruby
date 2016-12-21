@@ -10,7 +10,7 @@ module GoodData
   module LCM2
     class EnsureSegments < BaseAction
       PARAMS = define_params(self) do
-        param :segments, Type::SegmentType, required: true
+        param :segments, array_of(instance_of(Type::SegmentType)), required: true
       end
 
       class << self

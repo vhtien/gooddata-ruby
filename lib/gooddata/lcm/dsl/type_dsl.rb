@@ -19,6 +19,18 @@ module GoodData
 
         attr_reader :params
 
+        def array_of(type)
+          Type::ArrayType.new(type)
+        end
+
+        def instance_of(type)
+          type.new
+        end
+
+        def one_of(type)
+          Type::EnumType.new
+        end
+
         def new_param
           @param = Type::Param.new()
         end
@@ -37,10 +49,10 @@ module GoodData
             type: @param.type,
             opts: @param.opts,
             description: @param.description,
-            category: @param.type.const_get(:CATEGORY)
+            category: @param.type.class.const_get(:CATEGORY)
           }
 
-          # Create new intance of param
+          # Create new instance of param
           self.new_param
         end
       end

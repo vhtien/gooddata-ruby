@@ -11,6 +11,18 @@ module GoodData
     module Type
       class ArrayType < BaseType
         CATEGORY = :special
+
+        def initialize(type)
+          @type = type
+        end
+
+        def check(value)
+          true
+        end
+
+        def to_s
+          "#{self.class.name}<#{@type.to_s}>"
+        end
       end
     end
   end

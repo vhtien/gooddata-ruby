@@ -13,10 +13,8 @@ module GoodData
         CATEGORY = :scalar
         INTERNAL_TYPE = Hash
 
-        class << self
-          def check(value)
-            true
-          end
+        def check(value)
+          true
         end
       end
     end

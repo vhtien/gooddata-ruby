@@ -14,10 +14,14 @@ module GoodData
 
         PARAMS = define_type(self) do
           description 'Username used for connecting to GD'
-          param :username, Type::StringType, required: true
+          param :username, instance_of(Type::StringType), required: true
 
           description 'Password used for connecting to GD'
-          param :password, Type::StringType, required: true
+          param :password, instance_of(Type::StringType), required: true
+        end
+
+        def check(value)
+          true
         end
       end
     end

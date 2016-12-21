@@ -11,6 +11,10 @@ module GoodData
     module Type
       class AdsClientType < BaseType
         CATEGORY = :complex
+
+        def check(value)
+          true
+        end
       end
     end
   end

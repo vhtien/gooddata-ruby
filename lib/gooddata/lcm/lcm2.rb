@@ -13,6 +13,9 @@ require_relative 'helpers/helpers'
 
 module GoodData
   module LCM2
+    class SmartHash < Hash
+    end
+
     MODES = {
       test: [
         HelloWorld
@@ -50,6 +53,16 @@ module GoodData
     MODE_NAMES = MODES.keys
 
     class << self
+      def convert_params(params)
+        # Symbolize all keys
+        Hashie.symbolize_keys!(params)
+        self.convert_to_smart_hash(params)
+      end
+
+      def convert_to_smart_hash(params)
+        params
+      end
+
       def get_mode_actions(mode)
         MODES[mode.to_sym] || fail("Inavlid mode specified '#{mode}', supported modes are: '#{MODE_NAMES.join(', ')}'")
       end
@@ -88,8 +101,7 @@ module GoodData
       def perform(mode, params = {})
         puts "Running GoodData::LCM2#perform('#{mode}')"
 
-        # Symbolize all keys
-        Hashie.symbolize_keys!(params)
+        self.convert_params(params)
 
         # Get actions for mode specified
         actions = self.get_mode_actions(mode)
