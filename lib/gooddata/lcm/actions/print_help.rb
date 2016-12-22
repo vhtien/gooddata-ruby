@@ -8,8 +8,8 @@ require_relative 'base_action'
 
 module GoodData
   module LCM2
-    class PrintActions < BaseAction
-      DESCRIPTION = 'Print Information About Actions'
+    class PrintHelp < BaseAction
+      DESCRIPTION = 'Print Help'
 
       PARAMS = {
       }
@@ -20,21 +20,11 @@ module GoodData
           BaseAction.check_params(PARAMS, params)
 
           results = []
-
-          actions = GoodData::LCM2::Dsl::Dsl::PARAMS
-
-          actions.each_pair do |k, v|
-            type = []
-            v.each_pair do |k, v|
-              type << v[:type].class.short_name
-            end
-
-            type.compact!
-
+          GoodData::LCM2::MODES.keys.each_with_index do |mode, index|
             results << {
-              name: k, #.class.short_name,
-              params: v.keys.join("\n"),
-              type: type.join("\n")
+              '#': index,
+              mode: mode,
+              actions: GoodData::LCM2::MODES[mode].join("\n")
             }
           end
 

@@ -20,12 +20,18 @@ module GoodData
     end
 
     MODES = {
+      # Low Level Commands
+
       actions: [
         PrintActions
       ],
 
-      types: [
-        PrintTypes
+      hello: [
+        HelloWorld
+      ],
+
+      help: [
+        PrintHelp
       ],
 
       info: [
@@ -33,9 +39,12 @@ module GoodData
         PrintActions
       ],
 
-      hello: [
-        HelloWorld
+      types: [
+        PrintTypes
       ],
+
+
+      ## Bricks
 
       release: [
         EnsureSegments,
@@ -100,7 +109,7 @@ module GoodData
 
         rows = []
         actions.each_with_index do |action, index|
-          rows << [index, action, action.const_defined?(:DESCRIPTION) && action.const_get(:DESCRIPTION)]
+          rows << [index, action.short_name, action.const_defined?(:DESCRIPTION) && action.const_get(:DESCRIPTION)]
         end
 
         table = Terminal::Table.new :title => title, :headings => headings do |t|
@@ -113,7 +122,7 @@ module GoodData
       end
 
       def print_action_result(action, messages)
-        title = "Result of #{action.name}"
+        title = "Result of #{action.short_name}"
         headings = (messages.first && messages.first.keys) || []
 
         rows = messages.map do |message|
