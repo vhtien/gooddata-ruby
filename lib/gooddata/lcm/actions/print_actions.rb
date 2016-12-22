@@ -38,12 +38,17 @@ module GoodData
               param[:opts][:required]
             end
 
+            defaults = action_params.map do |k, param|
+              param[:opts][:default]
+            end
+
             results << {
               name: action.short_name,
               description: action.const_get(:DESCRIPTION),
               params: params.join("\n"),
               types: types.join("\n"),
-              required: required.join("\n")
+              required: required.join("\n"),
+              default: defaults.join("\n")
             }
           end
 
