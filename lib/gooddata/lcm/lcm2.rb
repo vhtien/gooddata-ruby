@@ -30,13 +30,14 @@ module GoodData
         HelloWorld
       ],
 
-      help: [
-        PrintHelp
+      modes: [
+        PrintModes
       ],
 
       info: [
         PrintTypes,
-        PrintActions
+        PrintActions,
+        PrintModes
       ],
 
       types: [
@@ -72,6 +73,11 @@ module GoodData
         SynchronizeProcesses,
         SynchronizeSchedules,
         SynchronizeClients,
+      ],
+
+      users: [
+        EnsureUsersDomain,
+        EnsureUsersProject,
       ]
     }
 

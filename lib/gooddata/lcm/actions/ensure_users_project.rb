@@ -8,15 +8,15 @@ require_relative 'base_action'
 
 module GoodData
   module LCM2
-    class PurgeClients < BaseAction
-      DESCRIPTION = 'Purge LCM Clients'
+    class EnsureUsersProject < BaseAction
+      DESCRIPTION = 'Ensure Project Users - Based On Input Source Data'
 
       PARAMS = define_params(self) do
-        description 'Delete Extra Clients'
-        param :delete_extra, instance_of(Type::BooleanType), required: false, default: false
+        description 'Client Used for Connecting to GD'
+        param :gd_client, instance_of(Type::GdClientType), required: true
 
-        description 'Physically Delete Client Projects'
-        param :delete_projects, instance_of(Type::BooleanType), required: false, default: false
+        description 'Segments to manage'
+        param :segments, array_of(instance_of(Type::SegmentType)), required: true
       end
 
       class << self

@@ -8,11 +8,13 @@ require_relative 'base_action'
 
 module GoodData
   module LCM2
-    class PrintHelp < BaseAction
-      DESCRIPTION = 'Print Help'
+    class EnsureUsersDomain < BaseAction
+      DESCRIPTION = 'Ensure Domain Users - Based On Input Source Data'
 
-      PARAMS = {
-      }
+      PARAMS = define_params(self) do
+        description 'Client Used for Connecting to GD'
+        param :gd_client, instance_of(Type::GdClientType), required: true
+      end
 
       class << self
         def call(params)
@@ -20,13 +22,6 @@ module GoodData
           BaseAction.check_params(PARAMS, params)
 
           results = []
-          GoodData::LCM2::MODES.keys.each_with_index do |mode, index|
-            results << {
-              '#': index,
-              mode: mode,
-              actions: GoodData::LCM2::MODES[mode].map(&:short_name).join("\n")
-            }
-          end
 
           # Return results
           results

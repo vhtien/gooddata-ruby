@@ -11,8 +11,13 @@ module GoodData
     class SynchronizeLabelTypes < BaseAction
       DESCRIPTION = 'Synchronize Label Types'
 
-      PARAMS = {
-      }
+      PARAMS = define_params(self) do
+        description 'Client Used for Connecting to GD'
+        param :gd_client, instance_of(Type::GdClientType), required: true
+
+        description 'Segments to manage'
+        param :segments, array_of(instance_of(Type::SegmentType)), required: true
+      end
 
       class << self
         def call(params)
