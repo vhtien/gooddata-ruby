@@ -20,33 +20,29 @@ module GoodData
           default: nil
         }
 
-        TYPES = {
-        }
+        PARAMS = {}
+        TYPES = {}
 
-        def define_params(klass, &block)
-          dsl = GoodData::LCM2::Dsl::ParamsDsl.new
+        def process(klass, type, caption, &block)
+          dsl = type.new
           dsl.instance_eval(&block)
 
-          puts "PARAMS: #{klass.name}"
+          puts "#{caption}: #{klass.name}"
           puts JSON.pretty_generate(dsl.params)
           puts
+
+          # yield if block_given?
 
           # Return params
           dsl.params
         end
 
+        def define_params(klass, &block)
+          PARAMS[klass.name] = self.process(klass, GoodData::LCM2::Dsl::ParamsDsl, 'PARAMS', &block)
+        end
+
         def define_type(klass, &block)
-          dsl = GoodData::LCM2::Dsl::TypeDsl.new
-          dsl.instance_eval(&block)
-
-          puts "TYPE: #{klass.name}"
-          puts JSON.pretty_generate(dsl.params)
-          puts
-
-          TYPES[klass.name] = dsl.params
-
-          # Return params
-          dsl.params
+          TYPES[klass.name] = self.process(klass, GoodData::LCM2::Dsl::TypeDsl, 'TYPE', &block)
         end
       end
     end

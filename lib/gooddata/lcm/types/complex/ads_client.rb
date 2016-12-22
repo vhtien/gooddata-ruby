@@ -15,11 +15,14 @@ module GoodData
         CATEGORY = :complex
 
         PARAMS = define_type(self) do
-          description 'Username used for connecting to GD'
+          description 'Username used for connecting to ADS'
           param :username, instance_of(Type::StringType), required: true
 
-          description 'Password used for connecting to GD'
+          description 'Password used for connecting to ADS'
           param :password, instance_of(Type::StringType), required: true
+
+          description 'JDBC Connection String used for connecting to ADS'
+          param :jdbc, instance_of(Type::StringType), required: true
         end
 
         def check(value)

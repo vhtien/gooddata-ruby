@@ -21,7 +21,8 @@ module GoodData
 
     MODES = {
       info: [
-        PrintTypes
+        PrintTypes,
+        PrintActions
       ],
 
       hello: [
