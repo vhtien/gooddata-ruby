@@ -102,10 +102,10 @@ module GoodData
         MODES[mode.to_sym] || fail("Invalid mode specified '#{mode}', supported modes are: '#{MODE_NAMES.join(', ')}'")
       end
 
-      def print_action_names(actions)
-        title = 'Actions to be performed'
+      def print_action_names(mode, actions)
+        title = "Actions to be performed for mode '#{mode}'"
 
-        headings = %w(# Name Description)
+        headings = %w(# NAME DESCRIPTION)
 
         rows = []
         actions.each_with_index do |action, index|
@@ -123,11 +123,12 @@ module GoodData
 
       def print_action_result(action, messages)
         title = "Result of #{action.short_name}"
-        headings = (messages.first && messages.first.keys) || []
+        keys = (messages.first && messages.first.keys) || []
+        headings = keys.map(&:upcase)
 
         rows = messages.map do |message|
           row = []
-          headings.each do |heading|
+          keys.each do |heading|
             row << message[heading]
           end
           row
@@ -152,15 +153,13 @@ module GoodData
       end
 
       def perform(mode, params = {})
-        puts "Running GoodData::LCM2#perform('#{mode}')"
-
         params = self.convert_params(params)
 
         # Get actions for mode specified
         actions = self.get_mode_actions(mode)
 
         # Print name of actions to be performed for debug purposes
-        self.print_action_names(actions)
+        self.print_action_names(mode, actions)
 
         # Run actions
         results = actions.map do |action|

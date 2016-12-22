@@ -14,6 +14,9 @@ module GoodData
       PARAMS = define_params(self) do
         description 'Message to be printed'
         param :message, instance_of(Type::StringType), required: true
+
+        description 'Number of Iterations'
+        param :iterations, instance_of(Type::IntegerType), required: false, default: 1
       end
 
       class << self

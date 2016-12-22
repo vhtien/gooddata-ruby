@@ -24,7 +24,7 @@ module GoodData
             results << {
               '#': index,
               mode: mode,
-              actions: GoodData::LCM2::MODES[mode].join("\n")
+              actions: GoodData::LCM2::MODES[mode].map(&:short_name).join("\n")
             }
           end
 

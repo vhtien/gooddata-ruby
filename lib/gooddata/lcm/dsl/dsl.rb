@@ -38,11 +38,11 @@ module GoodData
         end
 
         def define_params(klass, &block)
-          PARAMS[klass.name] = self.process(klass, GoodData::LCM2::Dsl::ParamsDsl, 'PARAMS', &block)
+          PARAMS[klass] = self.process(klass, GoodData::LCM2::Dsl::ParamsDsl, 'PARAMS', &block)
         end
 
         def define_type(klass, &block)
-          TYPES[klass.name] = self.process(klass, GoodData::LCM2::Dsl::TypeDsl, 'TYPE', &block)
+          TYPES[klass] = self.process(klass, GoodData::LCM2::Dsl::TypeDsl, 'TYPE', &block)
         end
       end
     end

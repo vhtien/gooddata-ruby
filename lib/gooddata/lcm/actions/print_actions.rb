@@ -32,9 +32,9 @@ module GoodData
             type.compact!
 
             results << {
-              name: k, #.class.short_name,
+              name: k.short_name,
               params: v.keys.join("\n"),
-              type: type.join("\n")
+              type: type.join("\n"),
             }
           end
 

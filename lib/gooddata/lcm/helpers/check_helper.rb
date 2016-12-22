@@ -13,13 +13,13 @@ module GoodData
         def check_params(specification, params)
           specification.keys.each do |param_name|
             value = params[param_name]
+            type = specification[param_name][:type]
+
             if value.nil?
               if specification[param_name][:opts][:required]
-                fail("Mandatory parameter '#{param_name}' not specified")
+                fail("Mandatory parameter '#{param_name}' of type '#{type}' is not specified")
               end
             else
-              type = specification[param_name][:type]
-
               if type.class.const_get(:CATEGORY) == :complex && !value.kind_of?(Hash)
                 puts JSON.pretty_generate(params)
                 fail "Expected parameter '#{param_name}' to be kind of '#{type}', got '#{value.class.name}'"

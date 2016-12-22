@@ -38,7 +38,7 @@ module GoodData
             end
 
             results << {
-              class: k,
+              class: k.short_name,
               param: v.keys.join("\n"),
               type: vals.join("\n"),
               required: required.join("\n"),
