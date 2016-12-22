@@ -21,20 +21,29 @@ module GoodData
 
           results = []
 
-          actions = GoodData::LCM2::Dsl::Dsl::PARAMS
+          actions = GoodData::LCM2::BaseAction.descendants
 
-          actions.each_pair do |k, v|
-            type = []
-            v.each_pair do |k, v|
-              type << v[:type].class.short_name
+          actions.each do |action|
+            action_params = action.const_get(:PARAMS)
+            action_params_keys = action_params.keys
+            params = action_params_keys.map do |param|
+              param
             end
 
-            type.compact!
+            types = action_params.map do |k, param|
+              param[:type].class.short_name
+            end
+
+            required = action_params.map do |k, param|
+              param[:opts][:required]
+            end
 
             results << {
-              name: k.short_name,
-              params: v.keys.join("\n"),
-              type: type.join("\n"),
+              name: action.short_name,
+              description: action.const_get(:DESCRIPTION),
+              params: params.join("\n"),
+              types: types.join("\n"),
+              required: required.join("\n")
             }
           end
 
