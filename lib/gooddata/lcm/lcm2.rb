@@ -20,6 +20,14 @@ module GoodData
     end
 
     MODES = {
+      actions: [
+        PrintActions
+      ],
+
+      types: [
+        PrintTypes
+      ],
+
       info: [
         PrintTypes,
         PrintActions
