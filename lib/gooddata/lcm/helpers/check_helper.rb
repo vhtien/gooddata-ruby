@@ -15,6 +15,17 @@ module GoodData
             value = params[param_name]
             type = specification[param_name][:type]
 
+            if value.nil? && aliases = specification[param_name][:opts][:aliases]
+              aliases = [aliases] unless aliases.respond_to? :each
+              aliases.each do |alias_param|
+                value = params[alias_param]
+                if value
+                  params[param_name] = value
+                  break
+                end
+              end
+            end
+
             if value.nil?
               if specification[param_name][:opts][:required]
                 fail("Mandatory parameter '#{param_name}' of type '#{type}' is not specified")
