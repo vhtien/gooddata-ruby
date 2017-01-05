@@ -27,7 +27,8 @@ module GoodData
       ],
 
       hello: [
-        HelloWorld
+        HelloWorld,
+        ByeWorld
       ],
 
       modes: [
@@ -151,39 +152,37 @@ module GoodData
       end
 
       def print_actions_result(actions, results)
-        actions.each_with_index do |action, index|
-          self.print_action_result(action, results[index])
+        results.each_with_index do |result, index|
+          self.print_action_result(actions[index], result[:results])
           puts
         end
         nil
       end
 
       def perform(mode, params = {})
-        params = self.convert_params(params)
-
         # Get actions for mode specified
         actions = self.get_mode_actions(mode)
 
         # Print name of actions to be performed for debug purposes
         self.print_action_names(mode, actions)
 
+        results = []
+
         # Run actions
-        results = actions.map do |action|
-          # puts "Performing #{action.name}"
-
-          puts
-
+        actions.each do |action|
           # Invoke action
-          res = action.send(:call, params)
+          res = action.send(:call, self.convert_params(results.last.nil? ? params : results.last[:params]))
 
           # Print action result
-          self.print_action_result(action, res)
+          self.print_action_result(action, res[:results])
 
           # Return result for final summary
-          res
+          results << res
+
+          break unless res[:go_to_next_action]
         end
 
-        if actions.length > 1
+        if results.length > 1
           puts
           puts 'SUMMARY'
           puts

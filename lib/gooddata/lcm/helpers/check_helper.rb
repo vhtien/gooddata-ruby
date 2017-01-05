@@ -29,6 +29,8 @@ module GoodData
             if value.nil?
               if specification[param_name][:opts][:required]
                 fail("Mandatory parameter '#{param_name}' of type '#{type}' is not specified")
+              elsif
+                params[param_name] = specification[param_name][:opts][:default]
               end
             else
               if type.class.const_get(:CATEGORY) == :complex && !value.kind_of?(Hash)

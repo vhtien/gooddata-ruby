@@ -8,18 +8,12 @@ require_relative 'base_action'
 
 module GoodData
   module LCM2
-    class HelloWorld < BaseAction
-      DESCRIPTION = 'Print Hello World Message'
+    class ByeWorld < BaseAction
+      DESCRIPTION = 'Print Goodbye World Message'
 
       PARAMS = define_params(self) do
         description 'Message to be printed'
-        param :message, instance_of(Type::StringType), required: true, aliases: [:greeting, :msg]
-
-        description 'Number of Iterations'
-        param :iterations, instance_of(Type::IntegerType), required: false, default: 1
-
-        description 'Stop chaining actions'
-        param :stop, instance_of(Type::BooleanType), required: false, default: false
+        param :bye_message, instance_of(Type::StringType), required: true
       end
 
       class << self
@@ -31,16 +25,14 @@ module GoodData
           # Check if all required parameters were passed
           BaseAction.check_params(PARAMS, params)
 
-          say(params.message)
+          say(params.bye_message)
 
           msg = {
-            message: params.message
+            bye_message: params.bye_message
           }
-
+          
           {
-            results: [msg],
-            params: { bye_message: 'Goodbye World!' }.merge(params),
-            go_to_next_action: !params.stop
+            results: [msg]
           }
         end
       end
