@@ -367,7 +367,12 @@ module GoodData
     #
     # @param new_hidden_param [String] Hidden parameters to be set
     def hidden_params=(new_hidden_params = {})
-      @json['schedule']['hiddenParams'] = new_hidden_params
+      new_string_hidden_params = Hash[
+        new_hidden_params.map do |k, v|
+          [k, v.to_s]
+        end
+      ]
+      @json['schedule']['hiddenParams'] = new_string_hidden_params
       @dirty = true
       self
     end
@@ -387,7 +392,12 @@ module GoodData
         'PROCESS_ID' => process_id,
         'EXECUTABLE' => executable
       }
-      @json['schedule']['params'] = default_params.merge(new_params)
+      new_string_params = Hash[
+        new_params.map do |k, v|
+          [k, v.to_s]
+        end
+      ]
+      @json['schedule']['params'] = default_params.merge(new_string_params)
       @dirty = true
       self
     end
