@@ -67,18 +67,18 @@ module GoodData
       ID_LENGTH = 16
 
       DEFAULT_HEADERS = {
-        :content_type => :json,
-        :accept => [:json, :zip],
-        :user_agent => GoodData.gem_version_string
+        content_type: :json,
+        accept: [:json, :zip],
+        user_agent: GoodData.gem_version_string
       }
 
       DEFAULT_WEBDAV_HEADERS = {
-        :user_agent => GoodData.gem_version_string
+        user_agent: GoodData.gem_version_string
       }
 
       DEFAULT_LOGIN_PAYLOAD = {
-        :headers => DEFAULT_HEADERS,
-        :verify_ssl => true
+        headers: DEFAULT_HEADERS,
+        verify_ssl: true
       }
 
       RETRYABLE_ERRORS = [
@@ -97,11 +97,11 @@ module GoodData
       class << self
         def construct_login_payload(username, password)
           res = {
-            'postUserLogin' => {
-              'login' => username,
-              'password' => password,
-              'remember' => 1,
-              'verify_level' => 2
+            postUserLogin: {
+              login: username,
+              password: password,
+              remember: 1,
+              verify_level: 2
             }
           }
           res
@@ -118,7 +118,7 @@ module GoodData
 
         # Retry block if exception thrown
         def retryable(options = {}, &_block)
-          opts = { :tries => 1, :on => RETRYABLE_ERRORS }.merge(options)
+          opts = { tries: 1, on: RETRYABLE_ERRORS }.merge(options)
 
           retry_exception = opts[:on]
           retries = opts[:tries]
@@ -200,21 +200,21 @@ module GoodData
 
         # Reset old cookies first
         if options[:sst_token]
-          merge_headers!(:x_gdc_authsst => options[:sst_token])
+          merge_headers!(x_gdc_authsst: options[:sst_token])
           get('/gdc/account/token', @request_params)
 
-          @user = get(get('/gdc/app/account/bootstrap')['bootstrapResource']['accountSetting']['links']['self'])
+          @user = get(get('/gdc/app/account/bootstrap')[:bootstrapResource][:accountSetting][:links][:self])
           GoodData.logger.info("Connected using SST to server #{@server.url} to profile \"#{@user['accountSetting']['login']}\"")
           @auth = {}
-          refresh_token :dont_reauth => true
+          refresh_token dont_reauth: true
         else
           GoodData.logger.info("Connected using username \"#{username}\" to server #{@server.url}")
           credentials = Connection.construct_login_payload(username, password)
           generate_session_id
-          @auth = post(LOGIN_PATH, credentials, :dont_reauth => true)['userLogin']
+          @auth = post(LOGIN_PATH, credentials, dont_reauth: true)[:userLogin]
 
-          refresh_token :dont_reauth => true
-          @user = get(@auth['profile'])
+          refresh_token dont_reauth: true
+          @user = get(@auth[:profile])
         end
         GoodData.logger.info('Connection successful')
       rescue RestClient::Unauthorized => e
@@ -229,11 +229,11 @@ module GoodData
       # Disconnect
       def disconnect
         # TODO: Wrap somehow
-        url = @auth['state']
+        url = @auth[:state]
 
         begin
           clear_session_id
-          delete(url, :x_gdc_authsst => sst_token) if url
+          delete(url, x_gdc_authsst: sst_token) if url
         rescue RestClient::Unauthorized
           GoodData.logger.info 'Already disconnected'
         end
@@ -277,10 +277,10 @@ module GoodData
 
         b = proc do |f|
           raw = {
-            :headers => @webdav_headers.merge(:x_gdc_authtt => headers[:x_gdc_authtt]),
-            :method => :get,
-            :url => url,
-            :verify_ssl => verify_ssl
+            headers: @webdav_headers.merge(x_gdc_authtt: headers[:x_gdc_authtt]),
+            method: :get,
+            url: url,
+            verify_ssl: verify_ssl
           }
           RestClient::Request.execute(raw) do |chunk, _x, response|
             if response.code.to_s != '200'
@@ -290,7 +290,7 @@ module GoodData
           end
         end
 
-        GoodData::Rest::Connection.retryable(:tries => Helpers::GD_MAX_RETRY, :refresh_token => proc { refresh_token }) do
+        GoodData::Rest::Connection.retryable(tries: Helpers::GD_MAX_RETRY, refresh_token: proc { refresh_token }) do
           if where.is_a?(IO) || where.is_a?(StringIO)
             b.call(where)
           else
@@ -305,9 +305,9 @@ module GoodData
       def refresh_token(_options = {})
         begin # rubocop:disable RedundantBegin
           # avoid infinite loop GET fails with 401
-          response = get(TOKEN_PATH, :x_gdc_authsst => sst_token, :dont_reauth => true)
+          response = get(TOKEN_PATH, x_gdc_authsst: sst_token, dont_reauth: true)
           # Remove when TT sent in headers. Currently we need to parse from body
-          merge_headers!(:x_gdc_authtt => GoodData::Helpers.get_path(response, %w(userToken token)))
+          merge_headers!(x_gdc_authtt: GoodData::Helpers.get_path(response, %w(userToken token)))
         rescue Exception => e # rubocop:disable RescueException
           puts e.message
           raise e
@@ -401,11 +401,11 @@ module GoodData
 
       def stats_table(values = stats)
         sorted = values.sort_by { |_k, v| v[:avg] }
-        Terminal::Table.new :headings => %w(title avg min max total calls) do |t|
+        Terminal::Table.new headings: %w(title avg min max total calls) do |t|
           overall = {
-            :avg => 0,
-            :calls => 0,
-            :total => 0
+            avg: 0,
+            calls: 0,
+            total: 0
           }
 
           sorted.each do |l|
@@ -480,15 +480,15 @@ module GoodData
         method = :mkcol
         b = proc do
           raw = {
-            :method => method,
-            :url => url,
-            :headers => @webdav_headers.merge(:x_gdc_authtt => headers[:x_gdc_authtt]),
-            :verify_ssl => verify_ssl
+            method: method,
+            url: url,
+            headers: @webdav_headers.merge(x_gdc_authtt: headers[:x_gdc_authtt]),
+            verify_ssl: verify_ssl
           }
           RestClient::Request.execute(raw)
         end
 
-        GoodData::Rest::Connection.retryable(:tries => Helpers::GD_MAX_RETRY, :refresh_token => proc { refresh_token }) do
+        GoodData::Rest::Connection.retryable(tries: Helpers::GD_MAX_RETRY, refresh_token: proc { refresh_token }) do
           b.call
         end
       end
@@ -496,11 +496,11 @@ module GoodData
       def do_stream_file(uri, filename, _options = {})
         GoodData.logger.info "Uploading file user storage #{uri}"
 
-        request = RestClient::Request.new(:method => :put,
-                                          :url => uri.to_s,
-                                          :verify_ssl => verify_ssl,
-                                          :headers => @webdav_headers.merge(:x_gdc_authtt => headers[:x_gdc_authtt]),
-                                          :payload => File.new(filename, 'rb'))
+        request = RestClient::Request.new(method: :put,
+                                          url: uri.to_s,
+                                          verify_ssl: verify_ssl,
+                                          headers: @webdav_headers.merge(x_gdc_authtt: headers[:x_gdc_authtt]),
+                                          payload: File.new(filename, 'rb'))
         request.execute
       end
 
@@ -536,8 +536,8 @@ module GoodData
 
       # request heders with freshly generated request id
       def fresh_request_params(request_id = nil)
-        tt = { :x_gdc_authtt => tt_token }
-        tt.merge(:x_gdc_request => request_id || generate_request_id)
+        tt = { x_gdc_authtt: tt_token }
+        tt.merge(x_gdc_request: request_id || generate_request_id)
       end
 
       def merge_headers!(headers)
@@ -558,7 +558,7 @@ module GoodData
         return response if process == false
 
         if content_type == 'application/json' || content_type == 'application/json;charset=UTF-8'
-          result = response.to_str == '""' ? {} : MultiJson.load(response.to_str)
+          result = response.to_str == '""' ? {} : MultiJson.load(response.to_str, symbolize_keys: true)
           GoodData.rest_logger.debug "Request ID: #{response.headers[:x_gdc_request]} - Response: #{result.inspect}"
         elsif ['text/plain;charset=UTF-8', 'text/plain; charset=UTF-8', 'text/plain'].include?(content_type)
           result = response
@@ -677,12 +677,12 @@ module GoodData
           stat = stats[title]
           if stat.nil?
             stat = {
-              :min => delta,
-              :max => delta,
-              :total => 0,
-              :avg => 0,
-              :calls => 0,
-              :entries => []
+              min: delta,
+              max: delta,
+              total: 0,
+              avg: 0,
+              calls: 0,
+              entries: []
             }
           end
 
@@ -702,12 +702,12 @@ module GoodData
         method = :get
         GoodData.logger.debug "#{method}: #{url}"
 
-        GoodData::Rest::Connection.retryable(:tries => Helpers::GD_MAX_RETRY, :refresh_token => proc { refresh_token }) do
+        GoodData::Rest::Connection.retryable(tries: Helpers::GD_MAX_RETRY, refresh_token: proc { refresh_token }) do
           raw = {
-            :method => method,
-            :url => url,
-            :headers => @webdav_headers.merge(:x_gdc_authtt => headers[:x_gdc_authtt]),
-            :verify_ssl => verify_ssl
+            method: method,
+            url: url,
+            headers: @webdav_headers.merge(x_gdc_authtt: headers[:x_gdc_authtt]),
+            verify_ssl: verify_ssl
           }.merge(headers)
           begin
             RestClient::Request.execute(raw)

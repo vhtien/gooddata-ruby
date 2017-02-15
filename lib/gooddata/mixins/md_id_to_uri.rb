@@ -15,12 +15,12 @@ module GoodData
 
         uri = project.md[IDENTIFIERS_CFG]
         response = client.post uri, 'identifierToUri' => ids
-        if response['identifiers'].empty?
+        if response[:identifiers].empty?
           nil
         else
-          identifiers = response['identifiers']
+          identifiers = response[:identifiers]
           ids_lookup = identifiers.reduce({}) do |a, e|
-            a[e['identifier']] = e['uri']
+            a[e[:identifier]] = e[:uri]
             a
           end
           uris = ids.map { |x| ids_lookup[x] }

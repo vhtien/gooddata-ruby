@@ -10,7 +10,7 @@ module GoodData
   module Mixin
     module MetaGetter
       def meta
-        data && data['meta']
+        data && data[:meta]
       end
     end
   end

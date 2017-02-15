@@ -8,7 +8,7 @@ module GoodData
   module Mixin
     module ContentGetter
       def content
-        data && data['content']
+        data && data[:content]
       end
     end
   end

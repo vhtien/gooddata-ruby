@@ -90,7 +90,7 @@ module GoodData
 
           new_opts = { verify_ssl: true }.merge(new_opts)
           if username.is_a?(Hash) && username[:cookies]
-            new_opts[:sst_token] = username[:cookies]['GDCAuthSST']
+            new_opts[:sst_token] = username[:cookies][:GDCAuthSST]
             new_opts[:cookies] = username[:cookies]
           end
 
@@ -172,7 +172,7 @@ module GoodData
       end
 
       def domain(domain_name)
-        GoodData::Domain[domain_name, :client => self]
+        GoodData::Domain[domain_name, client: self]
       end
 
       def project_is_accessible?(id)
@@ -273,7 +273,7 @@ module GoodData
         project = GoodData::Project[p, opts]
         fail ArgumentError, 'Wrong :project specified' if project.nil?
 
-        url = project.links['uploads']
+        url = project.links[:uploads]
         fail 'Project WebDAV not supported in this Data Center' unless url
 
         GoodData.logger.warn 'Beware! Project webdav is deprecated and should not be used.'
@@ -284,7 +284,7 @@ module GoodData
         uri = if opts[:webdav_server]
                 opts[:webdav_server]
               else
-                links.find { |i| i['category'] == 'uploads' }['link']
+                links.find { |i| i[:category] == 'uploads' }[:link]
               end
         res = uri.chomp('/') + '/'
         res[0] == '/' ? "#{connection.server}#{res}" : res
@@ -338,7 +338,7 @@ module GoodData
             fail ExecutionLimitExceeded, "The time limit #{time_limit} secs for polling on #{link} is over"
           end
           sleep sleep_interval
-          GoodData::Rest::Client.retryable(:tries => Helpers::GD_MAX_RETRY, :refresh_token => proc { connection.refresh_token }) do
+          GoodData::Rest::Client.retryable(tries: Helpers::GD_MAX_RETRY, refresh_token: proc { connection.refresh_token }) do
             response = get(link, process: process)
           end
         end
@@ -377,13 +377,13 @@ module GoodData
       end
 
       def download_from_user_webdav(source_relative_path, target_file_path, options = { client: GoodData.client })
-        download(source_relative_path, target_file_path, options.merge(:directory => options[:directory],
-                                                                       :staging_url => user_webdav_path))
+        download(source_relative_path, target_file_path, options.merge(directory: options[:directory],
+                                                                       staging_url: user_webdav_path))
       end
 
       def upload_to_user_webdav(file, options = {})
-        upload(file, options.merge(:directory => options[:directory],
-                                   :staging_url => user_webdav_path))
+        upload(file, options.merge(directory: options[:directory],
+                                   staging_url: user_webdav_path))
       end
 
       def with_project(pid, &block)

@@ -19,7 +19,7 @@ module GoodData
       #
       # @return [String] object author URI
       def author_uri
-        meta['author']
+        meta[:author]
       end
     end
   end

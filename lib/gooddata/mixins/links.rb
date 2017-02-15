@@ -8,7 +8,7 @@ module GoodData
   module Mixin
     module Links
       def links
-        data['links']
+        data[:links]
       end
     end
   end

@@ -60,8 +60,8 @@ module GoodData
         def default_client
         end
 
-        def client(opts = { :client => GoodData.connection })
-          opts[:client] # || GoodData.client
+        def client(opts = { client: GoodData.connection })
+          opts[:client]
         end
       end
     end
