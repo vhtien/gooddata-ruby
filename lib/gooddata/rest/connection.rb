@@ -87,7 +87,8 @@ module GoodData
         RestClient::RequestTimeout,
         RestClient::MethodNotAllowed,
         SystemCallError,
-        Timeout::Error
+        Timeout::Error,
+        RestClient::Forbidden
       ]
 
       RETRIES_ON_TOO_MANY_REQUESTS_ERROR = 12
@@ -145,6 +146,7 @@ module GoodData
             retry if (too_many_requests_tries -= 1) > 1
           rescue *retry_exception => e
             GoodData.logger.warn e.inspect
+            puts e.inspect
             retry if (retries -= 1) > 1
           end
           yield
