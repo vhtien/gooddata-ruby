@@ -367,11 +367,6 @@ module GoodData
     #
     # @param new_hidden_param [String] Hidden parameters to be set
     def hidden_params=(new_hidden_params = {})
-      new_string_hidden_params = Hash[
-        new_hidden_params.map do |k, v|
-          [k, v.to_s]
-        end
-      ]
       @json['schedule']['hiddenParams'] = stringify_values(new_hidden_params)
       @dirty = true
       self
@@ -385,11 +380,18 @@ module GoodData
     end
 
     def stringify_values(hash)
-      p hash
-      return hash if hash.nil?
       Hash[
         hash.map do |k, v|
-          [k, v.is_a?(Hash) ? stringify_values(v) : v.to_s]
+          val = case v
+                when nil
+                  v
+                when Hash
+                  stringify_values(v)
+                else
+                  v.to_s
+                end
+
+          [k, val]
         end
       ]
     end
