@@ -372,8 +372,7 @@ module GoodData
           [k, v.to_s]
         end
       ]
-      @json['schedule']['hiddenParams'] = new_string_hidden_params
-      p new_string_hidden_params
+      @json['schedule']['hiddenParams'] = stringify_values(new_hidden_params)
       @dirty = true
       self
     end
@@ -385,6 +384,14 @@ module GoodData
       @json['schedule']['params']
     end
 
+    def stringify_values(hash)
+      Hash[
+        hash.map do |k, v|
+          [k, v.is_a?(Hash) ? stringify_values(v) : v.to_s]
+        end
+      ]
+    end
+
     # Assigns execution parameters
     #
     # @param params [String] Params to be set
@@ -393,12 +400,7 @@ module GoodData
         'PROCESS_ID' => process_id,
         'EXECUTABLE' => executable
       }
-      new_string_params = Hash[
-        new_params.map do |k, v|
-          [k, v.to_s]
-        end
-      ]
-      @json['schedule']['params'] = default_params.merge(new_string_params)
+      @json['schedule']['params'] = default_params.merge(stringify_values(new_params))
       @dirty = true
       self
     end
