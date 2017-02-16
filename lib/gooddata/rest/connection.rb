@@ -134,6 +134,7 @@ module GoodData
           begin
             return yield
           rescue RestClient::Unauthorized, RestClient::Forbidden => e # , RestClient::Unauthorized => e
+            p e.inspect
             raise e unless options[:refresh_token]
             raise e if options[:dont_reauth]
             options[:refresh_token].call # (dont_reauth: true)
