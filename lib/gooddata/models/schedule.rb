@@ -385,6 +385,7 @@ module GoodData
     end
 
     def stringify_values(hash)
+      return hash if hash.nil?
       Hash[
         hash.map do |k, v|
           [k, v.is_a?(Hash) ? stringify_values(v) : v.to_s]
