@@ -373,6 +373,7 @@ module GoodData
         end
       ]
       @json['schedule']['hiddenParams'] = new_string_hidden_params
+      p new_string_hidden_params
       @dirty = true
       self
     end
