@@ -17,7 +17,13 @@ describe "Spin a project from template", :constraint => 'slow' do
 
   it "should spin a project from a template that does not exist. It should throw an error" do
     expect do
-      GoodData::Project.create(:title => "Test project", :template => "/some/nonexisting/template/uri", :auth_token => ConnectionHelper::GD_PROJECT_TOKEN, environment: ProjectHelper::ENVIRONMENT, :client => @client)
+      GoodData::Project.create(
+        title: "Test project",
+        template: "/some/nonexisting/template/uri",
+        auth_token: ConnectionHelper::GD_PROJECT_TOKEN,
+        environment: ProjectHelper::ENVIRONMENT,
+        client: @client
+      )
     end.to raise_error
   end
 end

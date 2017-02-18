@@ -35,7 +35,7 @@ HashSyntax:
   Enabled: false
 
 LineLength:
-  Max: 323
+  Max: 100 #100
 
 MethodLength:
   Enabled: false
@@ -95,4 +95,7 @@ UnneededInterpolation:
   Enabled: false
 
 UselessAccessModifier:
+  Enabled: false
+
+Style/MultilineBlockChain:
   Enabled: false

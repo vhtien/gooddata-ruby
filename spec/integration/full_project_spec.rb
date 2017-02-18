@@ -8,13 +8,23 @@ require 'gooddata'
 
 describe "Full project implementation", :constraint => 'slow' do
   before(:all) do
-    @spec = JSON.parse(File.read("./spec/data/blueprints/test_project_model_spec.json"), :symbolize_names => true)
-    @invalid_spec = JSON.parse(File.read("./spec/data/blueprints/invalid_blueprint.json"), :symbolize_names => true)
+    @spec = JSON.parse(
+      File.read("./spec/data/blueprints/test_project_model_spec.json"),
+      :symbolize_names => true
+    )
+    @invalid_spec = JSON.parse(
+      File.read("./spec/data/blueprints/invalid_blueprint.json"),
+      :symbolize_names => true
+    )
     @client = ConnectionHelper.create_default_connection
     @blueprint = GoodData::Model::ProjectBlueprint.new(@spec)
     @invalid_blueprint = GoodData::Model::ProjectBlueprint.new(@invalid_spec)
 
-    @project = @client.create_project_from_blueprint(@blueprint, token: ConnectionHelper::GD_PROJECT_TOKEN, environment: ProjectHelper::ENVIRONMENT)
+    @project = @client.create_project_from_blueprint(
+      @blueprint,
+      token: ConnectionHelper::GD_PROJECT_TOKEN,
+      environment: ProjectHelper::ENVIRONMENT
+    )
   end
 
   after(:all) do
@@ -25,12 +35,21 @@ describe "Full project implementation", :constraint => 'slow' do
 
   it "should not build an invalid model" do
     expect do
-      @client.create_project_from_blueprint(@invalid_spec, auth_token: ConnectionHelper::GD_PROJECT_TOKEN, environment: ProjectHelper::ENVIRONMENT)
+      @client.create_project_from_blueprint(
+        @invalid_spec,
+        auth_token: ConnectionHelper::GD_PROJECT_TOKEN,
+        environment: ProjectHelper::ENVIRONMENT
+      )
     end.to raise_error(GoodData::ValidationError)
   end
 
   it "should do nothing if the project is updated with the same blueprint" do
-    results = GoodData::Model::ProjectCreator.migrate_datasets(@spec, project: @project, client: @client, dry_run: true)
+    results = GoodData::Model::ProjectCreator.migrate_datasets(
+      @spec,
+      project: @project,
+      client: @client,
+      dry_run: true
+    )
     expect(results).to eq []
   end
 
@@ -39,19 +58,37 @@ describe "Full project implementation", :constraint => 'slow' do
     dataset.title = "Some title"
     dataset.save
 
-    # Now the update of project using the original blueprint should offer update of the title. Nothing else.
-    results = GoodData::Model::ProjectCreator.migrate_datasets(@spec, project: @project, client: @client, dry_run: true)
-    expect(results.first['updateScript']['maqlDdlChunks']).to eq ["ALTER DATASET {dataset.repos} VISUAL(TITLE \"Repositories\", DESCRIPTION \"\");\n"]
+    # Now the update of project using the original blueprint should offer update of the title.
+    # Nothing else.
+    results = GoodData::Model::ProjectCreator.migrate_datasets(
+      @spec,
+      project: @project,
+      client: @client,
+      dry_run: true
+    )
+    expect(
+      results.first['updateScript']['maqlDdlChunks']
+    ).to eq ["ALTER DATASET {dataset.repos} VISUAL(TITLE \"Repositories\", DESCRIPTION \"\");\n"]
 
     # Update using a freshly gained blueprint should offer no changes.
     new_blueprint = @project.blueprint
-    results = GoodData::Model::ProjectCreator.migrate_datasets(new_blueprint, project: @project, client: @client, dry_run: true)
+    results = GoodData::Model::ProjectCreator.migrate_datasets(
+      new_blueprint,
+      project: @project,
+      client: @client,
+      dry_run: true
+    )
     expect(results).to eq []
 
     # When we change the model using the original blueprint. Basically change the title back.
     @project.update_from_blueprint(@spec)
     # It should offer no changes using the original blueprint
-    results = GoodData::Model::ProjectCreator.migrate_datasets(@spec, project: @project, client: @client, dry_run: true)
+    results = GoodData::Model::ProjectCreator.migrate_datasets(
+      @spec,
+      project: @project,
+      client: @client,
+      dry_run: true
+    )
     expect(results).to eq []
   end
 
@@ -194,7 +231,8 @@ describe "Full project implementation", :constraint => 'slow' do
     expect(metric.execute).to eq 9
     # Since GD platform cannot execute inline specified metric the metric has to be saved
     # The code tries to resolve this as transparently as possible
-    # Here we are testing that you can execute the metric twice. The first execution is on unsaved metric
+    # Here we are testing that you can execute the metric twice.
+    # The first execution is on unsaved metric
     # We wanna make sure that when we are cleaning up we are not messing things up
     expect(metric.execute).to eq 9
   end
@@ -202,7 +240,8 @@ describe "Full project implementation", :constraint => 'slow' do
   it "should compute a report def" do
     f = @project.fact_by_title('Lines Changed')
 
-    # TODO: Here we create metric which is not deleted and is used by another test - "should exercise the object relations and getting them in various ways"
+    # TODO: Here we create metric which is not deleted and is used by another test
+    # - "should exercise the object relations and getting them in various ways"
     metric = @project.create_metric("SELECT SUM(#\"#{f.title}\")", :title => "My metric")
     metric.save
     result = @project.compute_report(:top => [metric], :left => ['label.devs.dev_id.email'])
@@ -255,9 +294,13 @@ describe "Full project implementation", :constraint => 'slow' do
     rd = r.latest_report_definition
     rd.content['chart'] = { 'styles' => { 'global' => { 'colorMapping' => 1 } } }
 
-    expect(GoodData::Helpers.get_path(rd.content, %w(chart styles global))).to eq('colorMapping' => 1)
+    expect(
+      GoodData::Helpers.get_path(rd.content, %w(chart styles global))
+    ).to eq('colorMapping' => 1)
     rd.reset_color_mapping!
-    expect(GoodData::Helpers.get_path(rd.content, %w(chart styles global))).to eq('colorMapping' => [])
+    expect(
+      GoodData::Helpers.get_path(rd.content, %w(chart styles global))
+    ).to eq('colorMapping' => [])
     r.delete
     res = m.used_by
     res.each do |dependency|
@@ -444,7 +487,9 @@ describe "Full project implementation", :constraint => 'slow' do
     label = attribute.primary_label
     value = label.values.first
     fact = @project.facts('fact.commits.lines_changed')
-    metric = @project.create_metric("SELECT SUM([#{fact.uri}]) WHERE [#{attribute.uri}] = [#{value[:uri]}]")
+    metric = @project.create_metric(
+      "SELECT SUM([#{fact.uri}]) WHERE [#{attribute.uri}] = [#{value[:uri]}]"
+    )
     expect(metric.contain_value?(label, value[:value])).to be true
   end
 
@@ -454,10 +499,14 @@ describe "Full project implementation", :constraint => 'slow' do
     value = label.values.first
     different_value = label.values.drop(1).first
     fact = @project.facts('fact.commits.lines_changed')
-    metric = @project.create_metric("SELECT SUM([#{fact.uri}]) WHERE [#{attribute.uri}] = [#{value[:uri]}]")
+    metric = @project.create_metric(
+      "SELECT SUM([#{fact.uri}]) WHERE [#{attribute.uri}] = [#{value[:uri]}]"
+    )
     metric.replace_value(label, value[:value], different_value[:value])
     expect(metric.contain_value?(label, value[:value])).to be false
-    expect(metric.pretty_expression).to eq "SELECT SUM([Lines Changed]) WHERE [Dev] = [josh@gooddata.com]"
+    expect(
+      metric.pretty_expression
+    ).to eq "SELECT SUM([Lines Changed]) WHERE [Dev] = [josh@gooddata.com]"
   end
 
   it "should be able to lookup the attributes by regexp and return a collection" do
@@ -519,7 +568,11 @@ describe "Full project implementation", :constraint => 'slow' do
   it "should be able to clone a project and transfer the data" do
     title = 'My new clone project'
     begin
-      cloned_project = @project.clone(title: title, auth_token: ConnectionHelper::GD_PROJECT_TOKEN, environment: ProjectHelper::ENVIRONMENT)
+      cloned_project = @project.clone(
+        title: title,
+        auth_token: ConnectionHelper::GD_PROJECT_TOKEN,
+        environment: ProjectHelper::ENVIRONMENT
+      )
       expect(cloned_project.title).to eq title
       expect(cloned_project.facts.first.create_metric.execute).to eq 9
       m = @project.facts.first.create_metric
@@ -548,7 +601,12 @@ describe "Full project implementation", :constraint => 'slow' do
 
   it "should be able to clone a project without data" do
     title = 'My new clone project'
-    cloned_project = @project.clone(title: title, auth_token: ConnectionHelper::GD_PROJECT_TOKEN, environment: ProjectHelper::ENVIRONMENT, data: false)
+    cloned_project = @project.clone(
+      title: title,
+      auth_token: ConnectionHelper::GD_PROJECT_TOKEN,
+      environment: ProjectHelper::ENVIRONMENT,
+      data: false
+    )
     expect(cloned_project.title).to eq title
     expect(cloned_project.facts.first.create_metric.execute).to eq nil
     cloned_project.delete
@@ -569,7 +627,9 @@ describe "Full project implementation", :constraint => 'slow' do
     r.save
     def_uris = r.definition_uris
     r.delete
-    expect { def_uris.each { |uri| @client.get(uri) } }.to raise_error(RestClient::ResourceNotFound)
+    expect do
+      def_uris.each { |uri| @client.get(uri) }
+    end.to raise_error(RestClient::ResourceNotFound)
   end
 
   it 'should be possible to delete data from a dataset' do
@@ -581,10 +641,17 @@ describe "Full project implementation", :constraint => 'slow' do
 
   it 'shoule be able to create project from blueprint support attribute sort order' do
     begin
-      attr_sort_order_spec = JSON.parse(File.read("./spec/data/blueprints/attribute_sort_order_blueprint.json"), :symbolize_names => true)
+      attr_sort_order_spec = JSON.parse(
+        File.read("./spec/data/blueprints/attribute_sort_order_blueprint.json"),
+        :symbolize_names => true
+      )
       attr_sort_order_blueprint = GoodData::Model::ProjectBlueprint.new(attr_sort_order_spec)
 
-      project = @client.create_project_from_blueprint(attr_sort_order_blueprint, token: ConnectionHelper::GD_PROJECT_TOKEN, environment: ProjectHelper::ENVIRONMENT)
+      project = @client.create_project_from_blueprint(
+        attr_sort_order_blueprint,
+        token: ConnectionHelper::GD_PROJECT_TOKEN,
+        environment: ProjectHelper::ENVIRONMENT
+      )
       attribute = project.blueprint.datasets('dataset.id').attributes('attr.id.name')
       expect(attribute.order_by).to eq 'label.id.name.name_label_2 - DESC'
     ensure

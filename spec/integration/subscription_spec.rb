@@ -10,7 +10,11 @@ describe GoodData::Subscription, :constraint => 'slow' do
   before(:all) do
     @client = ConnectionHelper.create_default_connection
     @channel = GoodData::ChannelConfiguration.create(client: @client)
-    subscriptions = GoodData::Subscription.all(project: ProjectHelper::PROJECT_ID, client: @client)
+
+    subscriptions = GoodData::Subscription.all(
+      project: ProjectHelper::PROJECT_ID,
+      client: @client
+    )
     subscriptions.each(&:delete)
   end
 
@@ -21,7 +25,14 @@ describe GoodData::Subscription, :constraint => 'slow' do
 
   it 'should be able to create a subscription' do
     begin
-      subscription = GoodData::Subscription.create(client: @client, project: ProjectHelper::PROJECT_ID, channels: @channel, message: 'hello world', process: ProcessHelper::PROCESS_ID, project_events: GoodData::Subscription::PROCESS_SUCCESS_EVENT)
+      subscription = GoodData::Subscription.create(
+        client: @client,
+        project: ProjectHelper::PROJECT_ID,
+        channels: @channel,
+        message: 'hello world',
+        process: ProcessHelper::PROCESS_ID,
+        project_events: GoodData::Subscription::PROCESS_SUCCESS_EVENT
+      )
       expect(subscription.title).to eq ConnectionHelper::DEFAULT_USERNAME
       expect(subscription.channels).to eq [@channel.uri]
       expect(subscription.message).to eq 'hello world'
@@ -34,13 +45,25 @@ describe GoodData::Subscription, :constraint => 'slow' do
 
   it 'should be able to edit a subscription' do
     begin
-      subscription = GoodData::Subscription.create(client: @client, project: ProjectHelper::PROJECT_ID, channels: @channel, process: ProcessHelper::PROCESS_ID, project_events: GoodData::Subscription::PROCESS_SUCCESS_EVENT)
+      subscription = GoodData::Subscription.create(
+        client: @client,
+        project: ProjectHelper::PROJECT_ID,
+        channels: @channel,
+        process: ProcessHelper::PROCESS_ID,
+        project_events: GoodData::Subscription::PROCESS_SUCCESS_EVENT
+      )
       expect(subscription.title).to eq ConnectionHelper::DEFAULT_USERNAME
 
       subscription.title = 'My title'
       subscription.save
 
-      expect(GoodData::Subscription[subscription.subscription_id, project: ProjectHelper::PROJECT_ID, client: @client].title).to eq 'My title'
+      expect(
+        GoodData::Subscription[
+          subscription.subscription_id,
+          project: ProjectHelper::PROJECT_ID,
+          client: @client
+        ].title
+      ).to eq 'My title'
     ensure
       subscription && subscription.delete
     end
@@ -48,16 +71,39 @@ describe GoodData::Subscription, :constraint => 'slow' do
 
   it 'should be able to list all subscriptions' do
     begin
-      expect(GoodData::Subscription.all(project: ProjectHelper::PROJECT_ID, client: @client)).to eq []
-      subscription = GoodData::Subscription.create(client: @client, project: ProjectHelper::PROJECT_ID, channels: @channel, process: ProcessHelper::PROCESS_ID, project_events: GoodData::Subscription::PROCESS_SUCCESS_EVENT)
-      expect(GoodData::Subscription.all(project: ProjectHelper::PROJECT_ID, client: @client)).to eq [subscription]
+      expect(
+        GoodData::Subscription.all(
+          project: ProjectHelper::PROJECT_ID,
+          client: @client
+        )
+      ).to eq []
+
+      subscription = GoodData::Subscription.create(
+        client: @client,
+        project: ProjectHelper::PROJECT_ID,
+        channels: @channel,
+        process: ProcessHelper::PROCESS_ID,
+        project_events: GoodData::Subscription::PROCESS_SUCCESS_EVENT
+      )
+      expect(
+        GoodData::Subscription.all(
+          project: ProjectHelper::PROJECT_ID,
+          client: @client
+        )
+      ).to eq [subscription]
     ensure
       subscription && subscription.delete
     end
   end
 
   it 'should be able to delete a subscription' do
-    subscription = GoodData::Subscription.create(client: @client, project: ProjectHelper::PROJECT_ID, channels: @channel, process: ProcessHelper::PROCESS_ID, project_events: GoodData::Subscription::PROCESS_SUCCESS_EVENT)
+    subscription = GoodData::Subscription.create(
+      client: @client,
+      project: ProjectHelper::PROJECT_ID,
+      channels: @channel,
+      process: ProcessHelper::PROCESS_ID,
+      project_events: GoodData::Subscription::PROCESS_SUCCESS_EVENT
+    )
     subscription.delete
   end
 end

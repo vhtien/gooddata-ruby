@@ -77,7 +77,12 @@ describe GoodData::Schedule do
   describe '#create' do
     it 'Creates new schedule if mandatory params passed' do
       begin
-        schedule = @project.create_schedule(ProcessHelper::PROCESS_ID, @test_cron, ProcessHelper::DEPLOY_NAME, @test_data)
+        schedule = @project.create_schedule(
+          ProcessHelper::PROCESS_ID,
+          @test_cron,
+          ProcessHelper::DEPLOY_NAME,
+          @test_data
+        )
         expect(schedule).to be_truthy
       ensure
         schedule && schedule.delete
@@ -86,7 +91,12 @@ describe GoodData::Schedule do
 
     it 'Creates new schedule if mandatory params passed and optional params are present' do
       begin
-        schedule = @project.create_schedule(ProcessHelper::PROCESS_ID, @test_cron, ProcessHelper::DEPLOY_NAME, @test_data_with_optional_param)
+        schedule = @project.create_schedule(
+          ProcessHelper::PROCESS_ID,
+          @test_cron,
+          ProcessHelper::DEPLOY_NAME,
+          @test_data_with_optional_param
+        )
         expect(schedule).to be_truthy
       ensure
         schedule && schedule.delete
@@ -97,7 +107,11 @@ describe GoodData::Schedule do
       schedule = nil
       begin
         expect do
-          schedule = @project.create_schedule(nil, @test_cron, ProcessHelper::DEPLOY_NAME, @test_data)
+          schedule = @project.create_schedule(
+            nil,
+            @test_cron,
+            ProcessHelper::DEPLOY_NAME, @test_data
+          )
         end.to raise_error 'Process ID has to be provided'
       ensure
         schedule && schedule.delete
@@ -108,7 +122,12 @@ describe GoodData::Schedule do
       schedule = nil
       begin
         expect do
-          schedule = @project.create_schedule(ProcessHelper::PROCESS_ID, @test_cron, nil, @test_data)
+          schedule = @project.create_schedule(
+            ProcessHelper::PROCESS_ID,
+            @test_cron,
+            nil,
+            @test_data
+          )
         end.to raise_error 'Executable has to be provided'
       ensure
         schedule && schedule.delete
@@ -121,7 +140,12 @@ describe GoodData::Schedule do
       schedule = nil
       begin
         expect do
-          schedule = @project.create_schedule(ProcessHelper::PROCESS_ID, nil, ProcessHelper::DEPLOY_NAME, data)
+          schedule = @project.create_schedule(
+            ProcessHelper::PROCESS_ID,
+            nil,
+            ProcessHelper::DEPLOY_NAME,
+            data
+          )
         end.to raise_error 'Trigger schedule has to be provided'
       ensure
         schedule && schedule.delete
@@ -130,7 +154,12 @@ describe GoodData::Schedule do
 
     it 'Throws exception when no timezone specified' do
       data = GoodData::Helpers.deep_dup(@test_data)
-      schedule = @project.create_schedule(ProcessHelper::PROCESS_ID, @test_cron, ProcessHelper::DEPLOY_NAME, data)
+      schedule = @project.create_schedule(
+        ProcessHelper::PROCESS_ID,
+        @test_cron,
+        ProcessHelper::DEPLOY_NAME,
+        data
+      )
       schedule.timezone = nil
       begin
         expect do
@@ -145,7 +174,12 @@ describe GoodData::Schedule do
       schedule = nil
       data = GoodData::Helpers.deep_dup(@test_data)
       begin
-        schedule = @project.create_schedule(ProcessHelper::PROCESS_ID, @test_cron, ProcessHelper::DEPLOY_NAME, data)
+        schedule = @project.create_schedule(
+          ProcessHelper::PROCESS_ID,
+          @test_cron,
+          ProcessHelper::DEPLOY_NAME,
+          data
+        )
         schedule.type = nil
         expect do
           schedule.save

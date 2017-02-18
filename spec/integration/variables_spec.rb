@@ -8,13 +8,22 @@ require 'gooddata'
 
 describe "Variables implementation", :constraint => 'slow' do
   before(:all) do
-    @spec = JSON.parse(File.read("./spec/data/blueprints/test_project_model_spec.json"), :symbolize_names => true)
+    @spec = JSON.parse(
+      File.read("./spec/data/blueprints/test_project_model_spec.json"),
+      :symbolize_names => true
+    )
     @client = ConnectionHelper.create_default_connection
     blueprint = GoodData::Model::ProjectBlueprint.new(@spec)
-    @project = @client.create_project_from_blueprint(blueprint, :token => ConnectionHelper::GD_PROJECT_TOKEN, environment: ProjectHelper::ENVIRONMENT)
+    @project = @client.create_project_from_blueprint(
+      blueprint,
+      token: ConnectionHelper::GD_PROJECT_TOKEN,
+      environment: ProjectHelper::ENVIRONMENT
+    )
     @domain = @client.domain(ConnectionHelper::DEFAULT_DOMAIN)
 
-    @label = GoodData::Attribute.find_first_by_title('Dev', client: @client, project: @project).label_by_name('email')
+    @label = GoodData::Attribute
+                        .find_first_by_title('Dev', client: @client, project: @project)
+                        .label_by_name('email')
 
     commits_data = [
       %w(lines_changed committed_on dev_id repo_id),
@@ -40,11 +49,20 @@ describe "Variables implementation", :constraint => 'slow' do
   end
 
   after(:each) do
-    @variable.user_values.select { |x| x.level == :user }.pmap(&:delete)
+    @variable.user_values.select do |x|
+      x.level == :user
+    end.pmap(&:delete)
   end
 
   it "should create a variable filter" do
-    filters = [[ConnectionHelper::DEFAULT_USERNAME, @label.uri, 'tomas@gooddata.com', 'jirka@gooddata.com']]
+    filters = [
+      [
+        ConnectionHelper::DEFAULT_USERNAME,
+        @label.uri,
+        'tomas@gooddata.com',
+        'jirka@gooddata.com'
+      ]
+    ]
 
     metric = @project.create_metric("SELECT SUM(#\"Lines Changed\")", :title => 'x')
 
@@ -92,8 +110,17 @@ describe "Variables implementation", :constraint => 'slow' do
 
   it "should fail when asked to set a value not in the proejct" do
     filters = [
-      [ConnectionHelper::DEFAULT_USERNAME, @label.uri, '%^&*( nonexistent value', 'tomas@gooddata.com'],
-      [ConnectionHelper::DEFAULT_USERNAME, @label.uri, 'tomas@gooddata.com']
+      [
+        ConnectionHelper::DEFAULT_USERNAME,
+        @label.uri,
+        '%^&*( nonexistent value',
+        'tomas@gooddata.com'
+      ],
+      [
+        ConnectionHelper::DEFAULT_USERNAME,
+        @label.uri,
+        'tomas@gooddata.com'
+      ]
     ]
     expect do
       @project.add_variable_permissions(filters, @variable)
@@ -102,10 +129,19 @@ describe "Variables implementation", :constraint => 'slow' do
   end
 
   it "should add a filter with nonexistent values when asked" do
-    filters = [[ConnectionHelper::DEFAULT_USERNAME, @label.uri, '%^&*( nonexistent value', 'jirka@gooddata.com']]
+    filters = [
+      [
+        ConnectionHelper::DEFAULT_USERNAME,
+        @label.uri,
+        '%^&*( nonexistent value',
+        'jirka@gooddata.com'
+      ]
+    ]
     @project.add_variable_permissions(filters, @variable, ignore_missing_values: true)
 
-    expect(@variable.user_values.pmap(&:pretty_expression)).to eq ["[Dev] IN ([jirka@gooddata.com])"]
+    expect(
+      @variable.user_values.pmap(&:pretty_expression)
+    ).to eq ["[Dev] IN ([jirka@gooddata.com])"]
     expect(@variable.user_values.count).to eq 1
   end
 
@@ -142,14 +178,29 @@ describe "Variables implementation", :constraint => 'slow' do
   end
 
   it "should set up false if all values are nonexistent" do
-    # metric = GoodData::Fact.find_first_by_title('Lines Changed', client: @client, project: @project).create_metric
-    filters = [[ConnectionHelper::DEFAULT_USERNAME, @label.uri, "NONEXISTENT1", "NONEXISTENT2", "NONEXISTENT3"]]
+    # metric = GoodData::Fact
+    #                     .find_first_by_title('Lines Changed', client: @client, project: @project)
+    #                     .create_metric
+    filters = [
+      [
+        ConnectionHelper::DEFAULT_USERNAME,
+        @label.uri,
+        "NONEXISTENT1",
+        "NONEXISTENT2",
+        "NONEXISTENT3"
+      ]
+    ]
     @project.add_variable_permissions(filters, @variable, ignore_missing_values: true)
     # expect(metric.execute).to eq 9
     expect(@variable.user_values.map { |f| [f.related.login, f.pretty_expression] })
       .to eq [[ConnectionHelper::DEFAULT_USERNAME, "TRUE"]]
 
-    @project.add_variable_permissions(filters, @variable, ignore_missing_values: true, restrict_if_missing_all_values: true)
+    @project.add_variable_permissions(
+      filters,
+      @variable,
+      ignore_missing_values: true,
+      restrict_if_missing_all_values: true
+    )
     # expect(metric.execute).to eq nil
     expect(@variable.user_values.count).to eq 0
   end
@@ -171,7 +222,11 @@ describe "Variables implementation", :constraint => 'slow' do
     new_filters = [
       [another_user.login, @label.uri, "tomas@gooddata.com"]
     ]
-    @project.add_variable_permissions(new_filters, @variable, do_not_touch_filters_that_are_not_mentioned: true)
+    @project.add_variable_permissions(
+      new_filters,
+      @variable,
+      do_not_touch_filters_that_are_not_mentioned: true
+    )
     expect(@variable.user_values.map { |f| [f.related.login, f.pretty_expression] })
       .to include([ConnectionHelper::DEFAULT_USERNAME, "[Dev] IN ([tomas@gooddata.com])"],
                   [another_user.login, "[Dev] IN ([tomas@gooddata.com])"])
@@ -180,11 +235,20 @@ describe "Variables implementation", :constraint => 'slow' do
   it "should be able to update the filter value in place", broken: true do
     pending 'FIXME: We cannot swap filters yet'
 
-    filters = [[ConnectionHelper::DEFAULT_USERNAME, @label.uri, "tomas@gooddata.com", "jirka@gooddata.com"]]
+    filters = [
+      [
+        ConnectionHelper::DEFAULT_USERNAME,
+        @label.uri,
+        "tomas@gooddata.com",
+        "jirka@gooddata.com"
+      ]
+    ]
     @project.add_variable_permissions(filters, @variable)
     perm = @variable.user_values.first
     filters = [[ConnectionHelper::DEFAULT_USERNAME, @label.uri, "tomas@gooddata.com"]]
     @project.add_variable_permissions(filters, @variable)
-    expect(perm.reload!.pretty_expression).to eq '[Dev] IN ([tomas@gooddata.com, jirka@gooddata.com])'
+    expect(
+      perm.reload!.pretty_expression
+    ).to eq '[Dev] IN ([tomas@gooddata.com, jirka@gooddata.com])'
   end
 end

@@ -14,3 +14,6 @@ Style/VariableNumber:
 
 Metrics/BlockLength:
   Enabled: false
+
+LineLength:
+  Enabled: false

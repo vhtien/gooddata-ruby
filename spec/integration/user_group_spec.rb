@@ -12,7 +12,11 @@ describe GoodData::UserGroup do
     @user_group_description = 'My Test Description'
 
     @client = ConnectionHelper.create_default_connection
-    @project = @client.create_project(title: 'UserGroup Testing Project', token: ConnectionHelper::GD_PROJECT_TOKEN, environment: ProjectHelper::ENVIRONMENT)
+    @project = @client.create_project(
+      title: 'UserGroup Testing Project',
+      token: ConnectionHelper::GD_PROJECT_TOKEN,
+      environment: ProjectHelper::ENVIRONMENT
+    )
     @domain = @client.domain(ConnectionHelper::DEFAULT_DOMAIN)
 
     users = (1..5).to_a.map do
@@ -25,7 +29,10 @@ describe GoodData::UserGroup do
     @project.add_users(users)
     @users = @project.users.to_a
 
-    @group = @project.add_user_group(:name => @user_group_name, :description => @user_group_description)
+    @group = @project.add_user_group(
+      :name => @user_group_name,
+      :description => @user_group_description
+    )
   end
 
   after(:all) do

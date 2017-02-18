@@ -11,16 +11,28 @@ describe GoodData::Segment do
   TOKEN = 'mustangs'
 
   before(:all) do
-    @client = GoodData.connect('mustang@gooddata.com', 'jindrisska', server: 'https://mustangs.intgdc.com', verify_ssl: false)
+    @client = GoodData.connect(
+      'mustang@gooddata.com',
+      'jindrisska',
+      server: 'https://mustangs.intgdc.com',
+      verify_ssl: false
+    )
     @domain = @client.domain('mustangs')
     GoodData::Segment.all(domain: @domain).each(&:delete)
   end
 
   before(:each) do
     @uuid = SecureRandom.uuid
-    @master_project = @client.create_project(title: "Test MASTER project for #{@uuid}", auth_token: TOKEN)
+    @master_project = @client.create_project(
+      title: "Test MASTER project for #{@uuid}",
+      auth_token: TOKEN
+    )
+
     @segment_name = "segment-#{@uuid}"
-    @segment = @domain.create_segment(segment_id: @segment_name, master_project: @master_project)
+    @segment = @domain.create_segment(
+      segment_id: @segment_name,
+      master_project: @master_project
+    )
   end
 
   after(:each) do
@@ -60,7 +72,11 @@ describe GoodData::Segment do
   describe '#save' do
     it 'can update a segment master project' do
       begin
-        different_master = @client.create_project(title: 'Test project', auth_token: TOKEN)
+        different_master = @client.create_project(
+          title: 'Test project',
+          auth_token: TOKEN
+        )
+
         @segment.master_project = different_master
         @segment.save
         @segment = @domain.segments(@segment_name)
@@ -82,8 +98,16 @@ describe GoodData::Segment do
   describe '#create_client' do
     it 'can create a new client in a segment' do
       begin
-        client_project = @client.create_project(title: 'client_1 project', auth_token: TOKEN)
-        segment_client = @segment.create_client(id: 'tenant_1', project: client_project)
+        client_project = @client.create_project(
+          title: 'client_1 project',
+          auth_token: TOKEN
+        )
+
+        segment_client = @segment.create_client(
+          id: 'tenant_1',
+          project: client_project
+        )
+
         expect(segment_client).to be_an_instance_of(GoodData::Client)
         expect(@segment.clients.count).to eq 1
       ensure
@@ -101,7 +125,12 @@ describe GoodData::Segment do
         expect(@segment.clients.count).to eq 1
         @domain.synchronize_clients
         @domain.provision_client_projects
-        expect(@domain.segments.flat_map { |s| s.clients.to_a }.all?(&:project?)).to be_truthy
+
+        expect(
+          @domain.segments.flat_map do |s|
+            s.clients.to_a
+          end.all?(&:project?)
+        ).to be_truthy
       ensure
         segment_client && segment_client.delete
       end
@@ -112,9 +141,15 @@ describe GoodData::Segment do
     it 'can create a new client in a segment without project and then provision' do
       begin
         uuid_2 = SecureRandom.uuid
-        master_project_2 = @client.create_project(title: "Test MASTER project for #{uuid_2}", auth_token: TOKEN)
+        master_project_2 = @client.create_project(
+          title: "Test MASTER project for #{uuid_2}",
+          auth_token: TOKEN
+        )
         segment_name_2 = "segment-#{uuid_2}"
-        segment_2 = @domain.create_segment(segment_id: segment_name_2, master_project: master_project_2)
+        segment_2 = @domain.create_segment(
+          segment_id: segment_name_2,
+          master_project: master_project_2
+        )
 
         client_1 = "client-#{SecureRandom.uuid}"
         client_2 = "client-#{SecureRandom.uuid}"
@@ -122,23 +157,52 @@ describe GoodData::Segment do
                 { id: client_2, segment: @segment_name }]
         @domain.update_clients(data)
         expect(@domain.segments.map(&:id)).to include(@segment.id, segment_2.id)
-        expect(@domain.segments.pmapcat { |s| s.clients.to_a }.map(&:id)).to include(client_1, client_2)
+        expect(
+          @domain.segments.pmapcat do |s|
+            s.clients.to_a
+          end.map(&:id)
+        ).to include(client_1, client_2)
 
         client_3 = "client-#{SecureRandom.uuid}"
         client_4 = "client-#{SecureRandom.uuid}"
         data = [{ id: client_3, segment: segment_name_2 },
                 { id: client_4, segment: @segment_name }]
         @domain.update_clients(data)
-        expect(@domain.segments.pmapcat { |s| s.clients.to_a }.map(&:id)).to include(client_1, client_2, client_3, client_4)
+        expect(
+          @domain.segments.pmapcat do |s|
+            s.clients.to_a
+          end.map(&:id)
+        ).to include(client_1, client_2, client_3, client_4)
 
         # bring the projects
         @domain.synchronize_clients
         @domain.provision_client_projects
-        projects_to_delete = @domain.segments.pmapcat { |s| s.clients.to_a }.select { |c| [client_1, client_2].include?(c.id) }.map(&:project)
+
+        projects_to_delete = @domain
+                              .segments.pmapcat do |s|
+                                s.clients.to_a
+                              end
+                              .select do |c|
+                                [client_1, client_2].include?(c.id)
+                              end
+                              .map(&:project)
+
         @domain.update_clients(data, delete_extra: true)
-        expect(@domain.segments.pmapcat { |s| s.clients.to_a }.map(&:id)).to include(client_3, client_4)
-        expect(@domain.segments.pmapcat { |s| s.clients.to_a }.map(&:id)).not_to include(client_1, client_2)
-        expect(projects_to_delete.pmap(&:reload!).map(&:state)).to eq [:deleted, :deleted]
+        expect(
+          @domain.segments.pmapcat do |s|
+            s.clients.to_a
+          end.map(&:id)
+        ).to include(client_3, client_4)
+
+        expect(
+          @domain.segments.pmapcat do |s|
+            s.clients.to_a
+          end.map(&:id)
+        ).not_to include(client_1, client_2)
+
+        expect(
+          projects_to_delete.pmap(&:reload!).map(&:state)
+        ).to eq [:deleted, :deleted]
       ensure
         master_project_2.delete if master_project_2
         segment_2.delete(force: true) if segment_2
