@@ -1466,7 +1466,7 @@ module GoodData
       whitelisted_new_users, whitelisted_users = whitelist_users(new_users.map(&:to_hash), users_list, options[:whitelists])
       p whitelisted_new_users
       puts '------------'
-      p whitelist_users
+      p whitelisted_users
 
       # First check that if groups are provided we have them set up
       check_groups(new_users.map(&:to_hash).flat_map { |u| u[:user_group] || [] }.uniq)
