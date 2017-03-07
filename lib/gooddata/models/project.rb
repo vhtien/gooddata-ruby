@@ -1433,6 +1433,9 @@ module GoodData
           if wl.is_a?(Regexp)
             user[:login] =~ wl
           else
+            p "user[:login] = #{user[:login]}"
+            p "wl = #{wl}"
+            p "user[:login] == wl is #{user[:login] == wl}"
             user[:login] && user[:login] == wl
           end
         end
