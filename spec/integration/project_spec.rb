@@ -64,6 +64,15 @@ describe GoodData::Project, :constraint => 'slow' do
   end
 
   describe '#import_users' do
+    it 'should add user which login contains a part of whitelists' do
+      users = [ProjectHelper.create_random_user(@client, login: "hello+#{rand(1e7)}+admin@gooddata.com")]
+      @domain.create_users(users)
+      @project.import_users(users, domain: @domain, whitelists: [/admin@gooddata.com/])
+      expect(@domain.members?(users)).to be_truthy
+      expect(@project.members?(users)).to be_truthy
+      expect(@project.members.count).to eq 2
+    end
+
     it "Updates user's name and surname and removes the users" do
       users = (1..2).to_a.map { ProjectHelper.create_random_user(@client) }
       @domain.create_users(users)
