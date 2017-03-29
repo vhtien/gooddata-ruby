@@ -1568,6 +1568,9 @@ module GoodData
         groups = user[:user_group] || []
         groups.map { |g| [user[:login], g] }
       end
+      puts '------------- XENKUTE'
+      pp mappings
+      puts '---------------------'
       unless mappings.empty?
         users_lookup = users.reduce({}) do |a, e|
           a[e.login] = e
