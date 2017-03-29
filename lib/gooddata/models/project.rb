@@ -1479,6 +1479,7 @@ module GoodData
 
     # Imports users
     def import_users(new_users, options = {})
+      pp new_users
       role_list = roles
       users_list = users
       new_users = new_users.map { |x| (x.is_a?(Hash) && x[:user] && x[:user].to_hash.merge(role: x[:role])) || x.to_hash }
