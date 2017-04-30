@@ -269,35 +269,70 @@ module GoodData
         # Run actions
         errors = []
         results = []
+
+        async_actions = []
         actions.each do |action|
+          run_mode = action.const_defined?('RUN_MODE') ? action.const_get('RUN_MODE') : 'sync'
+          if run_mode == 'sync'
+            async_actions << action
+          else
+            last_async_action = async_actions.last
+            if last_async_action.nil? || !last_async_action.is_a?(Array)
+              async_actions << [action]
+            else
+              last_async_action << action
+            end
+          end
+        end
+
+        async_actions.each do |action|
           puts
 
-          # Invoke action
-          begin
-            out = action.send(:call, params)
-          rescue => e
-            errors << {
-              action: action,
-              err: e,
-              backtrace: e.backtrace
-            }
-            break if fail_early
+          if action.is_a?(Array)
+            res = action.map.each_with_index { |x, i| [i, Concurrent::Future.execute {x.send(:call, params)}] }
+            loop { break if res.all? { |x| x.last.state != :pending } }
+
+            error = res.find { |x| x.last.rejected? }
+            if error
+              errors << {
+                action: action[error.first],
+                err: error.last.reason,
+                backtrace: error.last.reason.backtrace
+              }
+              break if fail_early
+            end
+
+            out = res.map { |x| [x.first, x.last.value] }
+          else
+            begin
+              out = action.send(:call, params)
+            rescue => e
+              errors << {
+                action: action,
+                err: e,
+                backtrace: e.backtrace
+              }
+              break if fail_early
+            end
           end
 
-          # Handle output results and params
-          res = out.is_a?(Array) ? out : out[:results]
-          out_params = out.is_a?(Hash) ? out[:params] || {} : {}
-          new_params = convert_to_smart_hash(out_params)
+          out = [[0, out]] if !out.is_a?(Array) || !out.first.is_a?(Array)
 
-          # Merge with new params
-          params.merge!(new_params)
+          out.each do |x|
+            res = x.last.is_a?(Array) ? x.last : x.last[:results]
+            out_params = x.last.is_a?(Hash) ? x.last[:params] || {} : {}
+            new_params = convert_to_smart_hash(out_params)
 
-          # Print action result
-          puts
-          print_action_result(action, res)
+            # Merge with new params
+            params.merge!(new_params)
 
-          # Store result for final summary
-          results << res
+            # Print action result
+            puts
+            print_action_result(action.is_a?(Array) ? action[x.first] : action, x.last)
+
+            # Store result for final summary
+            results << res
+          end
         end
 
         # Fail whole execution if there is any failed action

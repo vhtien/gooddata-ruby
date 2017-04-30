@@ -14,6 +14,8 @@ module GoodData
       PARAMS = {
       }
 
+      RUN_MODE = "sync"
+
       class << self
         def call(params)
           # Check if all required parameters were passed
