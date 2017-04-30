@@ -11,6 +11,8 @@ module GoodData
     class CollectComputedAttributeMetrics < BaseAction
       DESCRIPTION = 'Collect all metrics which is used in computed attributes in development projects'
 
+      RUN_MODE = "async"
+
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'
         param :gdc_gd_client, instance_of(Type::GdClientType), required: true

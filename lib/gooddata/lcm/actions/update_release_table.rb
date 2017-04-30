@@ -11,6 +11,8 @@ module GoodData
     class UpdateReleaseTable < BaseAction
       DESCRIPTION = 'Update Release Table'
 
+      RUN_MODE = "async"
+
       PARAMS = define_params(self) do
         description 'ADS Client'
         param :ads_client, instance_of(Type::AdsClientType), required: true

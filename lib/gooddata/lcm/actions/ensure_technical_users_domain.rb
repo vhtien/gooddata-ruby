@@ -11,6 +11,8 @@ module GoodData
     class EnsureTechnicalUsersDomain < BaseAction
       DESCRIPTION = 'Ensure Technical Users in Domain'
 
+      RUN_MODE = "sync"
+
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'
         param :gdc_gd_client, instance_of(Type::GdClientType), required: true

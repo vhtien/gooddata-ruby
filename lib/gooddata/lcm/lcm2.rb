@@ -92,9 +92,9 @@ module GoodData
         SynchronizeComputedAttributes,
         SynchronizeLabelTypes,
         SynchronizeAttributeDrillpath,
+        SynchronizeColorPalette,
         SynchronizeProcesses,
         SynchronizeSchedules,
-        SynchronizeColorPalette,
         SynchronizeNewSegments,
         UpdateReleaseTable
       ],
@@ -191,6 +191,7 @@ module GoodData
       end
 
       def print_action_result(action, messages)
+        pp messages
         title = "Result of #{action.short_name}"
 
         keys = if action.const_defined?('RESULT_HEADER')
@@ -289,20 +290,20 @@ module GoodData
           puts
 
           if action.is_a?(Array)
-            res = action.map.each_with_index { |x, i| [i, Concurrent::Future.execute {x.send(:call, params)}] }
-            loop { break if res.all? { |x| x.last.state != :pending } }
+            res = action.map { |action| { action: action, result: Concurrent::Future.execute {action.send(:call, params)} } }
+            loop { break if res.all? { |action_result| action_result[:result].state != :pending } }
 
-            error = res.find { |x| x.last.rejected? }
+            error = res.find { |action_result| action_result[:result].rejected? }
             if error
               errors << {
-                action: action[error.first],
-                err: error.last.reason,
-                backtrace: error.last.reason.backtrace
+                action: error[:action],
+                err: error[:result].reason,
+                backtrace: error[:result].reason.backtrace
               }
               break if fail_early
             end
 
-            out = res.map { |x| [x.first, x.last.value] }
+            out = res.map { |action_result| { action: action_result[:action], result: action_result[:result].value } }
           else
             begin
               out = action.send(:call, params)
@@ -314,13 +315,15 @@ module GoodData
               }
               break if fail_early
             end
+            out = [ { action: action, result: out } ]
           end
 
-          out = [[0, out]] if !out.is_a?(Array) || !out.first.is_a?(Array)
+          out.each do |out_result|
+            action = out_result[:action]
+            result = out_result[:result]
 
-          out.each do |x|
-            res = x.last.is_a?(Array) ? x.last : x.last[:results]
-            out_params = x.last.is_a?(Hash) ? x.last[:params] || {} : {}
+            res = result.is_a?(Array) ? result : result[:results]
+            out_params = result.is_a?(Hash) ? result[:params] || {} : {}
             new_params = convert_to_smart_hash(out_params)
 
             # Merge with new params
@@ -328,7 +331,7 @@ module GoodData
 
             # Print action result
             puts
-            print_action_result(action.is_a?(Array) ? action[x.first] : action, x.last)
+            print_action_result(action, res)
 
             # Store result for final summary
             results << res

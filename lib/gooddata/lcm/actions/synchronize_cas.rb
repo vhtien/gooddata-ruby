@@ -11,6 +11,8 @@ module GoodData
     class SynchronizeComputedAttributes < BaseAction
       DESCRIPTION = 'Synchronize Computed Attributes'
 
+      RUN_MODE = "sync"
+
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'
         param :gdc_gd_client, instance_of(Type::GdClientType), required: true

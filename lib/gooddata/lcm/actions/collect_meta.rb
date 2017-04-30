@@ -12,6 +12,8 @@ module GoodData
       DESCRIPTION = "Collect tagged dashboards (or all dashboards if not specify production tag) \
       with objects inside dashboards (reports, metrics ...) from development projects"
 
+      RUN_MODE = "async"
+
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'
         param :gdc_gd_client, instance_of(Type::GdClientType), required: true

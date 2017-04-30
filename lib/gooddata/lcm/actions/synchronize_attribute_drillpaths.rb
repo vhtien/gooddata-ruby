@@ -11,6 +11,8 @@ module GoodData
     class SynchronizeAttributeDrillpath < BaseAction
       DESCRIPTION = 'Synchronize Attribute Drillpath'
 
+      RUN_MODE = "async"
+
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'
         param :gdc_gd_client, instance_of(Type::GdClientType), required: true

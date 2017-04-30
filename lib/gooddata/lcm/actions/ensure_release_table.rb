@@ -11,6 +11,8 @@ module GoodData
     class EnsureReleaseTable < BaseAction
       DESCRIPTION = 'Ensures presence of LCM_RELEASE table'
 
+      RUN_MODE = "async"
+
       PARAMS = define_params(self) do
         description 'ADS Client'
         param :ads_client, instance_of(Type::AdsClientType), required: true
