@@ -39,28 +39,33 @@ module GoodData
           domain = client.domain(domain_name) || fail("Invalid domain name specified - #{domain_name}")
 
           technical_users = params.technical_user || []
-          technical_users.map do |technical_user|
-            domain_user = domain.users.find do |du|
-              du.login == technical_user
-            end
+          results = technical_users.map do |technical_user|
+            Concurrent::Promise.execute do
+              domain_user = domain.users.find do |du|
+                du.login == technical_user
+              end
 
-            if domain_user
-              {
-                login: domain_user.login,
-                email: domain_user.email,
-                domain: domain_name,
-                status: 'exists'
-              }
-            else
-              user = domain.add_user(login: technical_user, email: technical_user)
-              {
-                login: user.login,
-                email: user.email,
-                domain: domain_name,
-                status: 'added'
-              }
+              if domain_user
+                {
+                  login: domain_user.login,
+                  email: domain_user.email,
+                  domain: domain_name,
+                  status: 'exists'
+                }
+              else
+                user = domain.add_user(login: technical_user, email: technical_user)
+                {
+                  login: user.login,
+                  email: user.email,
+                  domain: domain_name,
+                  status: 'added'
+                }
+              end
             end
           end
+
+          Concurrent::Promise.zip(*results).value!
+          # results.map(&:value)
         end
       end
     end

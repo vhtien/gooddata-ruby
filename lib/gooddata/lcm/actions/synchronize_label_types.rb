@@ -29,30 +29,34 @@ module GoodData
           # Check if all required parameters were passed
           BaseAction.check_params(PARAMS, params)
 
-          results = []
+          results = Concurrent::Array.new
 
           client = params.gdc_gd_client
           development_client = params.development_client
 
-          params.synchronize.each do |info|
-            from = info.from
-            to = info.to
+          Concurrent::Promise.zip(
+            *params.synchronize.map do |info|
+              Concurrent::Promise.execute do
+                from = info.from
+                to = info.to
 
-            from_project = development_client.projects(from) || fail("Invalid 'from' project specified - '#{from}'")
-            to_projects = to.map do |project|
-              client.projects(project.pid)
+                from_project = development_client.projects(from) || fail("Invalid 'from' project specified - '#{from}'")
+                to_projects = to.map do |project|
+                  client.projects(project.pid)
+                end
+
+                GoodData::LCM.transfer_label_types(from_project, to_projects)
+
+                to_projects.each do |project|
+                  results << {
+                    from: from,
+                    to: project.pid,
+                    status: 'ok'
+                  }
+                end
+              end
             end
-
-            GoodData::LCM.transfer_label_types(from_project, to_projects)
-
-            to_projects.each do |project|
-              results << {
-                from: from,
-                to: project.pid,
-                status: 'ok'
-              }
-            end
-          end
+          ).value!
 
           # Return results
           results

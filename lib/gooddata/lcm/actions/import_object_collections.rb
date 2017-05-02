@@ -22,31 +22,35 @@ module GoodData
         def call(params)
           BaseAction.check_params(PARAMS, params)
 
-          results = []
+          results = Concurrent::Array.new
 
           client = params.gdc_gd_client
           development_client = params.development_client
 
-          params.synchronize.each do |info|
-            from = info.from
-            to_projects = info.to
-            transfer_uris = info.transfer_uris
+          Concurrent::Promise.zip(
+            *params.synchronize.map do |info|
+              Concurrent::Promise.execute do
+                from = info.from
+                to_projects = info.to
+                transfer_uris = info.transfer_uris
 
-            from_project = development_client.projects(from) || fail("Invalid 'from' project specified - '#{from}'")
+                from_project = development_client.projects(from) || fail("Invalid 'from' project specified - '#{from}'")
 
-            to_projects.each do |entry|
-              pid = entry[:pid]
-              to_project = client.projects(pid) || fail("Invalid 'to' project specified - '#{pid}'")
+                to_projects.each do |entry|
+                  pid = entry[:pid]
+                  to_project = client.projects(pid) || fail("Invalid 'to' project specified - '#{pid}'")
 
-              from_project.partial_md_export(transfer_uris, project: to_project)
+                  from_project.partial_md_export(transfer_uris, project: to_project)
 
-              results << {
-                from: from,
-                to: pid,
-                status: 'ok'
-              }
+                  results << {
+                    from: from,
+                    to: pid,
+                    status: 'ok'
+                  }
+                end
+              end
             end
-          end
+          ).value!
 
           results
         end

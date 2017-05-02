@@ -21,32 +21,34 @@ module GoodData
       class << self
         def call(params)
           BaseAction.check_params(PARAMS, params)
-          results = []
+          results = Concurrent::Array.new
           development_client = params.development_client
 
           synchronize = params.synchronize.map do |info|
-            from = info.from
-            from_project = development_client.projects(from) || fail("Invalid 'from' project specified - '#{from}'")
+            Concurrent::Promise.execute do
+              from = info.from
+              from_project = development_client.projects(from) || fail("Invalid 'from' project specified - '#{from}'")
 
-            metric_uris = from_project.computed_attributes.flat_map { |a| a.using('metric').map { |m| m['link'] } }
+              metric_uris = from_project.computed_attributes.flat_map { |a| a.using('metric').map { |m| m['link'] } }
 
-            info[:transfer_uris] ||= []
-            info[:transfer_uris] += metric_uris
+              info[:transfer_uris] ||= []
+              info[:transfer_uris] += metric_uris
 
-            results += metric_uris.map do |uri|
-              {
-                project: from,
-                transfer_uri: uri
-              }
+              results += metric_uris.map do |uri|
+                {
+                  project: from,
+                  transfer_uri: uri
+                }
+              end
+
+              info
             end
-
-            info
           end
 
           {
             results: results,
             params: {
-              synchronize: synchronize
+              synchronize: Concurrent::Promise.zip(*synchronize).value!
             }
           }
         end

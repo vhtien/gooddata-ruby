@@ -28,30 +28,34 @@ module GoodData
         def call(params)
           BaseAction.check_params(PARAMS, params)
 
-          results = []
+          results = Concurrent::Array.new
 
           client = params.gdc_gd_client
           development_client = params.development_client
 
-          params.synchronize.each do |info|
-            from_project = info.from
-            to_projects = info.to
+          Concurrent::Promise.zip(
+            *params.synchronize.map do |info|
+              Concurrent::Promise.execute do
+                from_project = info.from
+                to_projects = info.to
 
-            from = development_client.projects(from_project) || fail("Invalid 'from' project specified - '#{from_project}'")
-            to_projects.each do |entry|
-              pid = entry[:pid]
-              to_project = client.projects(pid) || fail("Invalid 'to' project specified - '#{pid}'")
+                from = development_client.projects(from_project) || fail("Invalid 'from' project specified - '#{from_project}'")
+                to_projects.each do |entry|
+                  pid = entry[:pid]
+                  to_project = client.projects(pid) || fail("Invalid 'to' project specified - '#{pid}'")
 
-              params.gdc_logger.info "Transferring Custom Color Palette, from project: '#{from.title}', PID: '#{from.pid}', to project: '#{to_project.title}', PID: '#{to_project.pid}'"
-              GoodData::Project.transfer_color_palette(from, to_project)
+                  params.gdc_logger.info "Transferring Custom Color Palette, from project: '#{from.title}', PID: '#{from.pid}', to project: '#{to_project.title}', PID: '#{to_project.pid}'"
+                  GoodData::Project.transfer_color_palette(from, to_project)
 
-              results << {
-                from: from_project,
-                to: pid,
-                status: 'ok'
-              }
+                  results << {
+                    from: from_project,
+                    to: pid,
+                    status: 'ok'
+                  }
+                end
+              end
             end
-          end
+          ).value!
 
           results
         end

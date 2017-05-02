@@ -25,34 +25,36 @@ module GoodData
         def call(params)
           BaseAction.check_params(PARAMS, params)
 
-          results = []
+          results = Concurrent::Array.new
           return results unless params.production_tag
 
           development_client = params.development_client
 
           synchronize = params.synchronize.map do |info|
-            from = info.from
-            from_project = development_client.projects(from) || fail("Invalid 'from' project specified - '#{from}'")
+            Concurrent::Promise.execute do
+              from = info.from
+              from_project = development_client.projects(from) || fail("Invalid 'from' project specified - '#{from}'")
 
-            objects = from_project.find_by_tag(params.production_tag)
+              objects = from_project.find_by_tag(params.production_tag)
 
-            info[:transfer_uris] ||= []
-            info[:transfer_uris] += objects
+              info[:transfer_uris] ||= []
+              info[:transfer_uris] += objects
 
-            results += objects.map do |uri|
-              {
-                project: from,
-                transfer_uri: uri
-              }
+              results += objects.map do |uri|
+                {
+                  project: from,
+                  transfer_uri: uri
+                }
+              end
+
+              info
             end
-
-            info
           end
 
           {
             results: results,
             params: {
-              synchronize: synchronize
+              synchronize: Concurrent::Promise.zip(*synchronize).value!
             }
           }
         end

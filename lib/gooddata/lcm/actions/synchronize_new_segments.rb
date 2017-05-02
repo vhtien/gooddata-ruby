@@ -27,29 +27,33 @@ module GoodData
           domain = client.domain(domain_name) || fail("Invalid domain name specified - #{domain_name}")
           domain_segments = domain.segments
 
-          params.segments.map do |segment_in|
-            segment_id = segment_in.segment_id
+          Concurrent::Promise.zip(
+            *params.segments.map do |segment_in|
+              Concurrent::Promise.execute do
+                segment_id = segment_in.segment_id
 
-            segment = domain_segments.find do |ds|
-              ds.segment_id == segment_id
+                segment = domain_segments.find do |ds|
+                  ds.segment_id == segment_id
+                end
+
+                if segment_in.is_new
+                  segment.synchronize_clients
+
+                  {
+                    segment: segment_id,
+                    new: true,
+                    synchronized: true
+                  }
+                else
+                  {
+                    segment: segment_id,
+                    new: false,
+                    synchronized: false
+                  }
+                end
+              end
             end
-
-            if segment_in.is_new
-              segment.synchronize_clients
-
-              {
-                segment: segment_id,
-                new: true,
-                synchronized: true
-              }
-            else
-              {
-                segment: segment_id,
-                new: false,
-                synchronized: false
-              }
-            end
-          end
+          ).value!
         end
       end
     end

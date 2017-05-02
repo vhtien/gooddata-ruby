@@ -24,32 +24,36 @@ module GoodData
       class << self
         def call(params)
           BaseAction.check_params(PARAMS, params)
-          results = []
+          results = Concurrent::Array.new
           development_client = params.development_client
           client = params.gdc_gd_client
 
-          params.synchronize.each do |info|
-            from = info.from
-            to_projects = info.to
+          Concurrent::Promise.zip(
+            *params.synchronize.map do |info|
+              Concurrent::Promise.execute do
+                from = info.from
+                to_projects = info.to
 
-            from_project = development_client.projects(from) || fail("Invalid 'from' project specified - '#{from}'")
-            params.gdc_logger.info "Synchronize Computed Attributes, project: '#{from_project.title}', PID: #{from_project.pid}"
+                from_project = development_client.projects(from) || fail("Invalid 'from' project specified - '#{from}'")
+                params.gdc_logger.info "Synchronize Computed Attributes, project: '#{from_project.title}', PID: #{from_project.pid}"
 
-            blueprint = from_project.blueprint
-            to_projects.each do |entry|
-              pid = entry[:pid]
-              to_project = client.projects(pid) || fail("Invalid 'to' project specified - '#{pid}'")
+                blueprint = from_project.blueprint
+                to_projects.each do |entry|
+                  pid = entry[:pid]
+                  to_project = client.projects(pid) || fail("Invalid 'to' project specified - '#{pid}'")
 
-              params.gdc_logger.info "Synchronizing Computed Attributes from project: '#{to_project.title}', PID: #{pid}"
-              to_project.update_from_blueprint(blueprint)
+                  params.gdc_logger.info "Synchronizing Computed Attributes from project: '#{to_project.title}', PID: #{pid}"
+                  to_project.update_from_blueprint(blueprint)
 
-              results << {
-                from: from,
-                to: pid,
-                status: 'ok'
-              }
+                  results << {
+                    from: from,
+                    to: pid,
+                    status: 'ok'
+                  }
+                end
+              end
             end
-          end
+          ).value!
 
           results
         end

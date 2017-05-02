@@ -44,25 +44,27 @@ module GoodData
           end
 
           results = params.synchronize.map do |synchronize_info|
-            synchronize_info[:to].map do |entry|
-              project = client.projects(entry[:pid])
-              res = project.create_users(new_users)
+            Concurrent::Promise.execute do
+              synchronize_info[:to].map do |entry|
+                project = client.projects(entry[:pid])
+                res = project.create_users(new_users)
 
-              new_users.zip(res).map do |f, s|
-                {
-                  project: project.title,
-                  pid: project.pid,
-                  login: f[:login],
-                  role: f[:role],
-                  result: s[:type],
-                  message: s[:message],
-                  url: s[:user]
-                }
+                new_users.zip(res).map do |f, s|
+                  {
+                    project: project.title,
+                    pid: project.pid,
+                    login: f[:login],
+                    role: f[:role],
+                    result: s[:type],
+                    message: s[:message],
+                    url: s[:user]
+                  }
+                end
               end
             end
           end
 
-          results.flatten
+          Concurrent::Promise.zip(*results).value!.flatten
         end
       end
     end

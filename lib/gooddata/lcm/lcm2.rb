@@ -191,7 +191,6 @@ module GoodData
       end
 
       def print_action_result(action, messages)
-        pp messages
         title = "Result of #{action.short_name}"
 
         keys = if action.const_defined?('RESULT_HEADER')
@@ -290,15 +289,14 @@ module GoodData
           puts
 
           if action.is_a?(Array)
-            res = action.map { |action| { action: action, result: Concurrent::Future.execute {action.send(:call, params)} } }
-            loop { break if res.all? { |action_result| action_result[:result].state != :pending } }
-
-            error = res.find { |action_result| action_result[:result].rejected? }
-            if error
+            res = action.map { |action| { action: action, result: Concurrent::Promise.execute {action.send(:call, params)} } }
+            begin
+              Concurrent::Promise.zip(*res.map { |x| x[:result] }).value!
+            rescue => e
               errors << {
-                action: error[:action],
-                err: error[:result].reason,
-                backtrace: error[:result].reason.backtrace
+                action: res.find { |action_result| action_result[:result].rejected? }[:action],
+                err: e,
+                backtrace: e.backtrace
               }
               break if fail_early
             end

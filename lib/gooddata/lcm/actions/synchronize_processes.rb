@@ -31,35 +31,39 @@ module GoodData
           # Check if all required parameters were passed
           BaseAction.check_params(PARAMS, params)
 
-          results = []
+          results = Concurrent::Array.new
 
           client = params.gdc_gd_client
           development_client = params.development_client
 
-          params.synchronize.each do |info|
-            from_project = info.from
-            to_projects = info.to
+          Concurrent::Promise.zip(
+            *params.synchronize.map do |info|
+              Concurrent::Promise.execute do
+                from_project = info.from
+                to_projects = info.to
 
-            from = development_client.projects(from_project) || fail("Invalid 'from' project specified - '#{from_project}'")
+                from = development_client.projects(from_project) || fail("Invalid 'from' project specified - '#{from_project}'")
 
-            to_projects.each do |to|
-              pid = to[:pid]
-              client_id = to[:client_id]
+                to_projects.each do |to|
+                  pid = to[:pid]
+                  client_id = to[:client_id]
 
-              to_project = client.projects(pid) || fail("Invalid 'to' project specified - '#{pid}'")
+                  to_project = client.projects(pid) || fail("Invalid 'to' project specified - '#{pid}'")
 
-              params.gdc_logger.info "Transferring processes, from project: '#{from.title}', PID: '#{from.pid}', to project: '#{to_project.title}', PID: '#{to_project.pid}'"
-              GoodData::Project.transfer_processes(from, to_project, ads_output_stage_uri: params.ads_output_stage_uri)
+                  params.gdc_logger.info "Transferring processes, from project: '#{from.title}', PID: '#{from.pid}', to project: '#{to_project.title}', PID: '#{to_project.pid}'"
+                  GoodData::Project.transfer_processes(from, to_project, ads_output_stage_uri: params.ads_output_stage_uri)
 
-              to_project.add.output_stage.client_id = client_id if client_id && to_project.add.output_stage
+                  to_project.add.output_stage.client_id = client_id if client_id && to_project.add.output_stage
 
-              results << {
-                from: from.pid,
-                to: to_project.pid,
-                status: 'ok'
-              }
+                  results << {
+                    from: from.pid,
+                    to: to_project.pid,
+                    status: 'ok'
+                  }
+                end
+              end
             end
-          end
+          ).value!
 
           # Return results
           results
