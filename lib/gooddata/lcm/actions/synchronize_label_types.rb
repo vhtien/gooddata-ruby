@@ -11,7 +11,7 @@ module GoodData
     class SynchronizeLabelTypes < BaseAction
       DESCRIPTION = 'Synchronize Label Types'
 
-      RUN_MODE = "async"
+      RUN_MODE = :asynchronous
 
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'

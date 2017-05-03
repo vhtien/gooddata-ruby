@@ -11,7 +11,7 @@ module GoodData
     class UpdateReleaseTable < BaseAction
       DESCRIPTION = 'Update Release Table'
 
-      RUN_MODE = "async"
+      RUN_MODE = :asynchronous
 
       PARAMS = define_params(self) do
         description 'ADS Client'

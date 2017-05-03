@@ -11,7 +11,7 @@ module GoodData
     class SynchronizeSchedules < BaseAction
       DESCRIPTION = 'Synchronize ETL (CC/Ruby) Processes Schedules'
 
-      RUN_MODE = "sync"
+      RUN_MODE = :synchronous
 
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'

@@ -11,6 +11,8 @@ module GoodData
     class PurgeClients < BaseAction
       DESCRIPTION = 'Purge LCM Clients'
 
+      RUN_MODE = :synchronous
+
       PARAMS = define_params(self) do
         description 'Organization Name'
         param :organization, instance_of(Type::StringType), required: true

@@ -11,7 +11,7 @@ module GoodData
     class ImportObjectCollections < BaseAction
       DESCRIPTION = 'Import all objects in CollectXXX action to master projects'
 
-      RUN_MODE = "sync"
+      RUN_MODE = :synchronous
 
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'

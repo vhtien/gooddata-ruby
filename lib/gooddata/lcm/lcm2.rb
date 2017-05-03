@@ -102,22 +102,22 @@ module GoodData
       provision: [
         EnsureReleaseTable,
         CollectSegments,
-        SegmentsFilter,
+        # SegmentsFilter,
         PurgeClients,
         CollectClients,
         AssociateClients,
         ProvisionClients,
         EnsureTechnicalUsersDomain,
         EnsureTechnicalUsersProject,
-        SynchronizeAttributeDrillpath,
-        SynchronizeETLsInSegment,
-        SynchronizeColorPalette
+        # SynchronizeAttributeDrillpath,
+        # SynchronizeETLsInSegment,
+        # SynchronizeColorPalette
       ],
 
       rollout: [
         EnsureReleaseTable,
         CollectSegments,
-        SegmentsFilter,
+        # SegmentsFilter,
         CollectSegmentClients,
         EnsureTechnicalUsersDomain,
         EnsureTechnicalUsersProject,
@@ -272,17 +272,17 @@ module GoodData
 
         async_actions = []
         actions.each do |action|
-          run_mode = action.const_defined?('RUN_MODE') ? action.const_get('RUN_MODE') : 'sync'
-          if run_mode == 'sync'
+          # run_mode = action.const_defined?('RUN_MODE') ? action.const_get('RUN_MODE') : :synchronous
+          # if run_mode == :synchronous
             async_actions << action
-          else
-            last_async_action = async_actions.last
-            if last_async_action.nil? || !last_async_action.is_a?(Array)
-              async_actions << [action]
-            else
-              last_async_action << action
-            end
-          end
+          # else
+          #   last_async_action = async_actions.last
+          #   if last_async_action.nil? || !last_async_action.is_a?(Array)
+          #     async_actions << [action]
+          #   else
+          #     last_async_action << action
+          #   end
+          # end
         end
 
         async_actions.each do |action|

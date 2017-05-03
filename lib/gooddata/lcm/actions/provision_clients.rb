@@ -11,6 +11,8 @@ module GoodData
     class ProvisionClients < BaseAction
       DESCRIPTION = 'Provisions LCM Clients'
 
+      RUN_MODE = :synchronous
+
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'
         param :gdc_gd_client, instance_of(Type::GdClientType), required: true

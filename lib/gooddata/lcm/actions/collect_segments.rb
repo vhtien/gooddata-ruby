@@ -11,6 +11,8 @@ module GoodData
     class CollectSegments < BaseAction
       DESCRIPTION = 'Collect Segments from API'
 
+      RUN_MODE = :asynchronous
+
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'
         param :gdc_gd_client, instance_of(Type::GdClientType), required: true

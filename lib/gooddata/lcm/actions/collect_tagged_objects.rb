@@ -11,7 +11,7 @@ module GoodData
     class CollectTaggedObjects < BaseAction
       DESCRIPTION = 'Collect all objects tagged with the +$PRODUCTION_TAG+ from development projects'
 
-      RUN_MODE = "async"
+      RUN_MODE = :asynchronous
 
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'

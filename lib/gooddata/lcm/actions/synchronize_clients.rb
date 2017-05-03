@@ -11,6 +11,8 @@ module GoodData
     class SynchronizeClients < BaseAction
       DESCRIPTION = 'Synchronize LCM Clients'
 
+      RUN_MODE = :asynchronous
+
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'
         param :gdc_gd_client, instance_of(Type::GdClientType), required: true

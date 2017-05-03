@@ -11,7 +11,7 @@ module GoodData
     class SynchronizeAttributeDrillpath < BaseAction
       DESCRIPTION = 'Synchronize Attribute Drillpath'
 
-      RUN_MODE = "async"
+      RUN_MODE = :asynchronous
 
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'

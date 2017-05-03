@@ -11,7 +11,7 @@ module GoodData
     class SynchronizeNewSegments < BaseAction
       DESCRIPTION = 'Synchronize New Segments'
 
-      RUN_MODE = "async"
+      RUN_MODE = :asynchronous
 
       PARAMS = define_params(self) do
       end

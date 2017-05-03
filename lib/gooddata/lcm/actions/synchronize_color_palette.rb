@@ -11,7 +11,7 @@ module GoodData
     class SynchronizeColorPalette < BaseAction
       DESCRIPTION = 'Synchronize Custom Color Palette'
 
-      RUN_MODE = "async"
+      RUN_MODE = :asynchronous
 
       PARAMS = define_params(self) do
         description 'Client Used for Connecting to GD'
