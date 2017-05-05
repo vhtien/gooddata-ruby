@@ -13,6 +13,7 @@ module GoodData
       def call(params)
         params = params.to_hash
 
+        pp GoodData::Helpers.decode_params(params, resolve_reference_params: true, convert_pipe_delimited_params: true)
         # Decode and resolve reference parameters in gd_encoded_params
         @app.call(GoodData::Helpers.decode_params(params, resolve_reference_params: true, convert_pipe_delimited_params: true))
       end
