@@ -77,7 +77,13 @@ module GoodData
           data_source = GoodData::Helpers::DataSource.new(params.input_source)
           input_data = File.open(data_source.realize(params), 'r:UTF-8')
           CSV.foreach(input_data, :headers => true, :return_headers => false, encoding: 'utf-8') do |row|
+            puts "row"
+            p row
             segment_name = row[segment_id_column]
+            puts "segment_name"
+            p segment_name
+            puts "segment_names"
+            p segment_names
             if segment_names.nil? || segment_names.include?(segment_name)
               clients << {
                 id: row[client_id_column],
