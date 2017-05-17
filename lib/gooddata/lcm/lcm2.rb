@@ -160,6 +160,7 @@ module GoodData
       def get_mode_actions(mode)
         mode = mode.to_sym
         actions = MODES[mode]
+        p "XXXXXXXXXXXXX     #{mode}"
         p mode
         if mode == :generic_lifecycle
           []
