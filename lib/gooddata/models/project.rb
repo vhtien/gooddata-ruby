@@ -452,7 +452,7 @@ module GoodData
 
       def schedule_parameters(id, schedule_spec)
         {
-          params: schedule_spec[:params].merge('PROJECT_ID' => id),
+          params: schedule_spec[:params],
           hidden_params: schedule_spec[:hidden_params],
           name: schedule_spec[:name],
           reschedule: schedule_spec[:reschedule],
