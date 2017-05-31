@@ -32,12 +32,12 @@ module GoodData
         @realized = false
       end
 
-      def realize(params = {})
+      def realize(params = {}, options = {})
         @realized = true
         source = @source && @source.to_s
         case source
         when 'ads'
-          realize_query(params)
+          realize_query(params, options)
         when 'staging'
           realize_staging(params)
         when 'web'
@@ -55,7 +55,8 @@ module GoodData
 
       private
 
-      def realize_query(params)
+      def realize_query(params, options = {})
+        options = { with_headers: true }.merge(options)
         query = DataSource.interpolate_sql_params(@options[:query], params)
         dwh = params['ads_client'] || params[:ads_client] || raise("Data Source needs a client to ads to be able to query the storage but 'ads_client' is empty.")
         filename = Digest::SHA256.new.hexdigest(query)
@@ -67,7 +68,7 @@ module GoodData
               unless header_written
                 header_written = true
                 header = row.keys
-                csv << header
+                csv << header if options[:with_headers]
               end
               csv << row.values_at(*header)
             end
