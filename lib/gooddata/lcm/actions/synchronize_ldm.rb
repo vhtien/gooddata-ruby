@@ -32,7 +32,7 @@ module GoodData
           client = params.gdc_gd_client
           development_client = params.development_client
 
-          params.synchronize.peach do |info|
+          params.synchronize.each do |info|
             from_project = info.from
             to_projects = info.to
 
@@ -40,7 +40,7 @@ module GoodData
             params.gdc_logger.info "Creating Blueprint, project: '#{from.title}', PID: #{from.pid}"
 
             blueprint = from.blueprint(include_ca: false)
-            to_projects.each do |entry|
+            to_projects.peach do |entry|
               pid = entry[:pid]
               to_project = client.projects(pid) || fail("Invalid 'to' project specified - '#{pid}'")
 
