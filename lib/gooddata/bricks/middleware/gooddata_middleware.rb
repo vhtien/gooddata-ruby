@@ -32,6 +32,7 @@ module GoodData
         end
 
         # Connect Client
+        GoodData.logger.debug params
         protocol = params['CLIENT_GDC_PROTOCOL'] || params['GDC_PROTOCOL'] || DEFAULT_PROTOCOL
         hostname = params['CLIENT_GDC_HOSTNAME'] || params['GDC_HOSTNAME'] || DEFAULT_HOSTNAME
         server = "#{protocol}://#{hostname}"
