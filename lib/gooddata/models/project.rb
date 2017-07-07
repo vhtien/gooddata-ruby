@@ -358,7 +358,6 @@ module GoodData
         end
 
         results = []
-        p diff
         loop do # rubocop:disable Metrics/BlockLength
           break if stack.empty?
           state, changed_schedule = stack.shift
@@ -369,6 +368,15 @@ module GoodData
               next
             end
             remote_process, process_spec = cache.find do |_remote, local, schedule|
+              puts "Debug schedule_spec"
+              p schedule_spec
+              puts "Debug _remote:"
+              p _remote
+              puts "Debug local:"
+              p local
+              puts "Debug schedule:"
+              p schedule
+
               (schedule_spec[:process_id] == local.process_id) && (schedule.name == schedule_spec[:name])
             end
 
