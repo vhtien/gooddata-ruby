@@ -358,6 +358,7 @@ module GoodData
         end
 
         results = []
+        p diff
         loop do # rubocop:disable Metrics/BlockLength
           break if stack.empty?
           state, changed_schedule = stack.shift
