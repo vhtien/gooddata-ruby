@@ -323,6 +323,18 @@ module GoodData
                     end
                   end
 
+        puts "XEN KUTE debug cache"
+        to_project
+                  .processes.sort_by(&:name)
+                  .zip(from_project.processes.sort_by(&:name))
+                  .flat_map do |remote, local|
+                    local.schedules.map do |schedule|
+                      [remote, local, schedule]
+                      puts "#{remote.name} - #{local.name} - #{schedule.name}"
+                      puts "#{remote.process_id} - #{local.process_id} - #{schedule.process_id}"
+                    end
+                  end
+
         remote_schedules = to_project.schedules
         remote_stuff = remote_schedules.map do |s|
           v = s.to_hash
