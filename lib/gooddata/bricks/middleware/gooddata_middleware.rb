@@ -20,6 +20,7 @@ module GoodData
         # Transform keys
         params = GoodData::Helpers.stringify_keys(params)
         # params = GoodData::Helpers.symbolize_keys(params)
+        p params
 
         # Set logger
         logger = params['GDC_LOGGER']
