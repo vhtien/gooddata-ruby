@@ -27,7 +27,7 @@ module GoodData
           type.new
         end
 
-        def one_of(types)
+        def one_of(*types)
           Type::EnumType.new(types)
         end
 
