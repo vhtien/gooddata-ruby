@@ -14,7 +14,7 @@ module GoodData
 
       PARAMS = define_params(self) do
         description 'Production Tag Name'
-        param :production_tag, instance_of(Type::StringType), required: false
+        param :production_tag, one_of(instance_of(Type::StringType), array_of(instance_of(Type::StringType))), required: false
 
         description 'Development Client Used for Connecting to GD'
         param :development_client, instance_of(Type::GdClientType), required: true

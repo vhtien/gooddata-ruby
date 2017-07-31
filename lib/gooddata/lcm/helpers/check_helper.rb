@@ -25,14 +25,8 @@ module GoodData
                 fail "Expected parameter '#{param_name}' to be kind of '#{type}', got '#{value.class.name}'"
               end
 
-              puts "XENKUTE DEBUG"
-              p type
-              p value
-              p type.check(value)
-              puts "XENKUTE DEBUG END"
-
               unless type.check(value)
-                fail "Parameter '#{param_name}' has invalid type, expected: #{type}"
+                fail "Parameter '#{param_name}' has invalid type, expected: #{type}, got: #{value.class.name}"
               end
             end
           end

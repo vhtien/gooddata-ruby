@@ -20,7 +20,7 @@ module GoodData
         param :synchronize, array_of(instance_of(Type::SynchronizationInfoType)), required: true, generated: true
 
         description 'Tag Name'
-        param :production_tag, instance_of(Type::StringType), required: false
+        param :production_tag, one_of(instance_of(Type::StringType), array_of(instance_of(Type::StringType))), required: false
 
         description 'Segments to search for segment-specific production tags'
         param :segments, array_of(instance_of(Type::SegmentType)), required: false

@@ -21,8 +21,11 @@ module GoodData
           description 'PID of Development Project'
           param :development_pid, instance_of(Type::StringType), required: true
 
+          description 'Production Tag Name'
+          param :production_tag, one_of(instance_of(Type::StringType), array_of(instance_of(Type::StringType))), required: false
+
           description 'Storage Driver'
-          param :driver, instance_of(Type::StringType), required: true # required: false, , default: 'pg'
+          param :driver, instance_of(Type::StringType), required: true
 
           description 'Master Project Name'
           param :master_name, instance_of(Type::StringType), required: true

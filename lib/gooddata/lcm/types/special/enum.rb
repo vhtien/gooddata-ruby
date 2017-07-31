@@ -11,6 +11,22 @@ module GoodData
     module Type
       class EnumType < BaseType
         CATEGORY = :special
+
+        def initialize(types)
+          @types = types
+        end
+
+        def check(value)
+          @types.each do |type|
+            return true if type.check(value)
+          end
+
+          false
+        end
+
+        def to_s
+          "#{self.class.short_name}<#{@types}>"
+        end
       end
     end
   end
