@@ -20,7 +20,7 @@ describe GoodData::LCM2::SegmentsFilter do
     end
 
     it 'raise error' do
-      expect { subject.class.call(params) }.to raise_error
+      expect { subject.class.call(params) }.to raise_error(/segment_foo/)
     end
   end
 end
