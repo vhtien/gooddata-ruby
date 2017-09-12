@@ -1717,6 +1717,7 @@ module GoodData
         groups = user[:user_group] || []
         groups.map { |g| [user[:login], g] }
       end
+      p "XENKUTE:  #{mappings}"
       unless mappings.empty?
         users_lookup = users.reduce({}) do |a, e|
           a[e.login] = e
@@ -1769,6 +1770,7 @@ module GoodData
     def check_groups(specified_groups, options = {})
       groups = user_groups.map(&:name)
       missing_groups = specified_groups - groups
+      p "XENKUTE:  #{missing_groups}"
       if options[:create_non_existing_user_groups]
         missing_groups.each do |g|
           create_group(name: g, description: g)

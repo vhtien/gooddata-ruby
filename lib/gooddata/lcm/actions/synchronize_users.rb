@@ -119,8 +119,12 @@ module GoodData
 
             modes = modes.split(',').map(&:strip).map { |x| x.to_s.upcase } unless modes.is_a? Array
 
+            user_group = row[user_groups_column] || row[user_groups_column.to_sym]
+
             ip_whitelist = row[ip_whitelist_column] || row[ip_whitelist_column.to_sym]
             ip_whitelist = ip_whitelist.split(',').map(&:strip) if ip_whitelist
+
+            p "XENKUTE:    #{row}"
 
             new_users << {
               :first_name => row[first_name_column] || row[first_name_column.to_sym],
@@ -131,7 +135,7 @@ module GoodData
               :role => row[role_column] || row[role_column.to_sym],
               :sso_provider => sso_provider || row[sso_provider_column] || row[sso_provider_column.to_sym],
               :authentication_modes => modes,
-              :user_group => row[user_groups_column] && row[user_groups_column].split(',').map(&:strip),
+              :user_group => user_group && user_group.split(',').map(&:strip),
               :pid => multiple_projects_column.nil? ? nil : (row[multiple_projects_column] || row[multiple_projects_column.to_sym]),
               :language => row[language_column] || row[language_column.to_sym],
               :company => row[company_column] || row[company_column.to_sym],
@@ -141,6 +145,8 @@ module GoodData
               :ip_whitelist => ip_whitelist
             }.compact
           end
+
+          p "XENKUTE:   #{new_users}"
 
           # There are several scenarios we want to provide with this brick
           # 1) Sync only domain
